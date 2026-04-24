@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+.wallet-wrapper{
+padding:40px 20px;
+}
+
+/* page title */
+
+.wallet-title{
+text-align:center;
+font-weight:800;
+margin-bottom:25px;
+}
+
+/* balance card */
+
+.balance-card{
+background:linear-gradient(135deg,#11998e,#38ef7d);
+color:white;
+border-radius:20px;
+padding:30px;
+text-align:center;
+box-shadow:0 20px 40px rgba(0,0,0,0.25);
+margin-bottom:25px;
+}
+
+/* main card */
+
+.wallet-card{
+background:rgba(255,255,255,0.12);
+backdrop-filter:blur(15px);
+border-radius:20px;
+padding:25px;
+box-shadow:0 20px 50px rgba(0,0,0,0.2);
+}
+
+/* inputs */
+
+.wallet-card input{
+border-radius:10px;
+height:45px;
+}
+
+/* buttons */
+
+.btn-bank{
+border-radius:25px;
+font-weight:600;
+}
+
+.btn-withdraw{
+border-radius:25px;
+font-weight:600;
+}
+
+/* tables */
+
+.wallet-table thead{
+background:#111;
+color:white;
+}
+
+.wallet-table tbody tr{
+transition:.2s;
+}
+
+.wallet-table tbody tr:hover{
+background:#f7f7f7;
+}
+
+/* transaction colors */
+
+.credit{
+color:#28a745;
+font-weight:600;
+}
+
+.debit{
+color:#dc3545;
+font-weight:600;
+}
+
+</style>
+
+<div class="container wallet-wrapper">
+
+<h3 class="wallet-title">💰 My Wallet</h3>
+
+<!-- balance -->
+
+<div class="balance-card">
+
+<h5>Available Balance</h5>
+
+<h2>₹ {{ wallet.balance }}</h2>
+
+</div>
+
+<div class="wallet-card">
+
+<h5>Withdraw Money</h5>
+
+<a
+href="{% url 'bank_details' %}"
+class="btn btn-warning btn-bank mb-3">
+🏦 Add / Update Bank Details
+</a>
+
+<form method="POST" action="{% url 'withdraw_request' %}">
+
+{% csrf_token %}
+
+<input
+type="number"
+name="amount"
+placeholder="Enter amount"
+class="form-control mb-2"
+required>
+
+<button class="btn btn-success btn-withdraw">
+💸 Request Withdraw
+</button>
+
+</form>
+
+<hr>
+
+<h5>Withdraw History</h5>
+
+<table class="table wallet-table table-hover">
+
+<thead>
+<tr>
+<th>Amount</th>
+<th>Status</th>
+<th>Date</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for w in withdrawals %}
+
+<tr>
+<td>₹ {{ w.amount }}</td>
+<td>{{ w.status }}</td>
+<td>{{ w.created_at }}</td>
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="3" class="text-center">
+No withdraw requests
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+<hr>
+
+<h5>Wallet Transactions</h5>
+
+<table class="table wallet-table table-hover">
+
+<thead>
+<tr>
+<th>Type</th>
+<th>Amount</th>
+<th>Description</th>
+<th>Date</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for t in transactions %}
+
+<tr>
+
+<td>
+
+{% if t.transaction_type == "credit" %}
+<span class="credit">Credit</span>
+{% else %}
+<span class="debit">Debit</span>
+{% endif %}
+
+</td>
+
+<td>₹ {{ t.amount }}</td>
+
+<td>{{ t.description }}</td>
+
+<td>{{ t.created_at }}</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="4" class="text-center">
+No transactions yet
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+<p class="text-muted mt-3">
+Your earnings will appear here.
+</p>
+
+</div>
+
+</div>
+
+{% endblock %}

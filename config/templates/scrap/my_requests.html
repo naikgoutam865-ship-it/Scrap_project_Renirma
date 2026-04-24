@@ -1,0 +1,166 @@
+<!-- artist jab request karta hey oh request bala page  -->
+
+{% extends "base.html" %}
+
+{% block title %}My Requests{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* ===== TITLE ===== */
+.req-title{
+    text-align:center;
+    font-weight:700;
+    letter-spacing:.5px;
+}
+
+/* ===== TABLE CARD ===== */
+.req-wrapper{
+    border-radius:22px;
+    overflow:hidden;
+    background:rgba(255,255,255,.95);
+    backdrop-filter: blur(6px);
+    box-shadow:0 20px 50px rgba(0,0,0,.12);
+}
+
+/* ===== HEADER ===== */
+.req-wrapper thead{
+    background:linear-gradient(135deg,#111827,#1f2937);
+    color:#fff;
+    letter-spacing:.3px;
+}
+
+/* ===== ROW HOVER ===== */
+.req-wrapper tbody tr{
+    transition:all .3s ease;
+}
+
+.req-wrapper tbody tr:hover{
+    transform:scale(1.01);
+    background:#f7f8ff;
+    box-shadow:0 8px 18px rgba(0,0,0,.08);
+}
+
+/* ===== STATUS BADGES ===== */
+.badge-pending{
+    background:linear-gradient(135deg,#facc15,#f59e0b);
+    color:#000;
+    padding:6px 12px;
+    border-radius:30px;
+    font-weight:600;
+}
+
+.badge-approved{
+    background:linear-gradient(135deg,#10b981,#059669);
+    color:#fff;
+    padding:6px 12px;
+    border-radius:30px;
+    font-weight:600;
+}
+
+.badge-rejected{
+    background:linear-gradient(135deg,#ef4444,#dc2626);
+    color:#fff;
+    padding:6px 12px;
+    border-radius:30px;
+    font-weight:600;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-box{
+    padding:60px;
+    border-radius:20px;
+    background:linear-gradient(135deg,#f8f9fa,#eef2f7);
+    box-shadow:0 12px 30px rgba(0,0,0,.1);
+}
+
+/* ===== FADE ===== */
+.container{
+    animation:fadeUp .6s ease;
+}
+@keyframes fadeUp{
+    from{opacity:0; transform:translateY(15px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+</style>
+
+
+<h3 class="mb-4 req-title">
+    📬 My Scrap Requests
+</h3>
+
+<div class="req-wrapper">
+    
+<div class="table-responsive">
+
+<table class="table mb-0 align-middle">
+
+    <thead>
+        <tr>
+            <th class="ps-4">Scrap</th>
+            <th>Seller</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for r in requests %}
+        <tr>
+
+            <td class="ps-4 fw-semibold">
+                {{ r.scrap.category|title }}
+            </td>
+
+            <td>
+                {{ r.scrap.seller.username }}
+            </td>
+
+            <td>
+                {% if r.status == "pending" %}
+                    <span class="badge-pending">Pending</span>
+
+                {% elif r.status == "approved" %}
+                    <span class="badge-approved">Approved</span>
+
+                {% elif r.status == "rejected" %}
+                    <span class="badge-rejected">Rejected</span>
+
+                {% elif r.status == "converted" %}
+                    <span class="badge-converted">Converted</span>
+
+                {% else %}
+                    <span class="badge-unknown">{{ r.status }}</span>
+                {% endif %}
+            </td>
+
+            <td class="text-muted">
+                {{ r.requested_at }}
+            </td>
+
+        </tr>
+
+        {% empty %}
+        <tr>
+            <td colspan="4" class="text-center">
+                <div class="empty-box">
+                    <h5>No requests yet</h5>
+                    <p class="text-muted mb-0">
+                        Once you request scrap, it will appear here.
+                    </p>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+
+</table>
+</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,153 @@
+<!-- ARTIST KAA SOLD ARTWORK PAGE HEY YE  -->
+
+{% extends "base.html" %}
+{% block title %}Sold Artworks{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* ===== PAGE ANIMATION ===== */
+.container{
+    animation:fadeUp .6s ease;
+}
+@keyframes fadeUp{
+    from{opacity:0; transform:translateY(30px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+/* ===== TITLE ===== */
+.sold-title{
+    font-weight:700;
+    letter-spacing:.4px;
+}
+
+/* ===== ART CARD ===== */
+.sold-card{
+    border:none;
+    border-radius:22px;
+    overflow:hidden;
+    background:linear-gradient(135deg,#ffffff,#f9fbff);
+    box-shadow:0 30px 60px rgba(0,0,0,.12);
+    transition:.35s;
+}
+
+.sold-card:hover{
+    transform:translateY(-8px) scale(1.01);
+    box-shadow:0 40px 80px rgba(0,0,0,.18);
+}
+
+/* ===== IMAGE ===== */
+.sold-card img{
+    transition:.4s;
+}
+.sold-card:hover img{
+    transform:scale(1.05);
+}
+
+/* ===== BADGE ===== */
+.status-badge{
+    position:absolute;
+    top:12px;
+    right:12px;
+    background:linear-gradient(135deg,#22c55e,#15803d);
+    color:white;
+    padding:6px 12px;
+    font-size:12px;
+    border-radius:999px;
+    font-weight:600;
+    box-shadow:0 6px 18px rgba(0,0,0,.2);
+}
+
+/* ===== BODY ===== */
+.sold-body{
+    padding:18px 20px;
+}
+
+/* ===== TITLE ===== */
+.sold-name{
+    font-weight:700;
+    letter-spacing:.2px;
+}
+
+/* ===== BUYER TAG ===== */
+.buyer-chip{
+    background:#eef2ff;
+    color:#4338ca;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:600;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-box{
+    padding:35px;
+    text-align:center;
+    font-weight:500;
+    border-radius:16px;
+    background:linear-gradient(135deg,#f0f9ff,#eef2ff);
+    box-shadow:0 15px 35px rgba(0,0,0,.1);
+}
+
+</style>
+
+
+<h3 class="mb-4 text-center sold-title">
+    🎨 Sold Artworks
+</h3>
+
+<div class="row">
+
+    {% for order in orders %}
+
+    <div class="col-md-4 mb-4">
+
+        <div class="card sold-card h-100 position-relative">
+
+            <!-- STATUS BADGE -->
+            <span class="status-badge">
+                {{ order.status|capfirst }}
+            </span>
+
+            {% if order.artwork.image %}
+                <img src="{{ order.artwork.image.url }}"
+                     class="card-img-top"
+                     style="height:220px; object-fit:cover;">
+            {% endif %}
+
+            <div class="sold-body">
+
+                <h5 class="sold-name mb-2">
+                    {{ order.artwork.title }}
+                </h5>
+
+                <div class="mb-2">
+                    <span class="buyer-chip">
+                        👤 {{ order.buyer.username }}
+                    </span>
+                </div>
+
+                <small class="text-muted">
+                    Sold on {{ order.ordered_at|date:"d M Y, H:i" }}
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+        <div class="col-12">
+            <div class="empty-box">
+                🎨 No artworks sold yet.
+            </div>
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

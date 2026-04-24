@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Pickup Details{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css">
+
+<style>
+
+/* Page Heading */
+.pickup-title{
+font-weight:700;
+letter-spacing:.5px;
+}
+
+/* Form Card */
+.pickup-card{
+background:rgba(255,255,255,0.85);
+backdrop-filter:blur(12px);
+border-radius:20px;
+padding:30px;
+box-shadow:0 10px 30px rgba(0,0,0,.15);
+animation:fadeUp .6s ease;
+}
+
+/* Input styling */
+.pickup-card input,
+.pickup-card select{
+border-radius:12px;
+padding:12px;
+border:1px solid #ddd;
+transition:.25s;
+}
+
+.pickup-card input:focus,
+.pickup-card select:focus{
+border-color:#0d6efd;
+box-shadow:0 0 0 2px rgba(13,110,253,.15);
+}
+
+/* Button */
+.pickup-btn{
+border-radius:10px;
+padding:10px 20px;
+font-weight:600;
+transition:.3s;
+}
+
+.pickup-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 6px 20px rgba(0,0,0,.2);
+}
+
+/* Animation */
+@keyframes fadeUp{
+from{
+opacity:0;
+transform:translateY(25px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+</style>
+
+<div class="container">
+
+<h3 class="mb-4 pickup-title">📦 Enter Pickup Details</h3>
+
+<div class="pickup-card">
+
+<form method="post">
+
+{% csrf_token %}
+
+<div class="mb-3">
+<label class="form-label">Pickup Time</label>
+<select name="pickup_time" class="form-control" required>
+<option value="">Select Time</option>
+<option value="morning">Morning</option>
+<option value="afternoon">Afternoon</option>
+<option value="evening">Evening</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Pickup Date</label>
+<input type="date"
+name="pickup_date"
+class="form-control"
+required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Contact Number</label>
+
+<input type="tel"
+id="phone"
+name="pickup_contact"
+class="form-control"
+placeholder="Enter phone number"
+required>
+
+</div>
+
+<button class="btn btn-primary pickup-btn">
+Submit Pickup Details
+</button>
+
+</form>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
+
+<script>
+
+const input = document.querySelector("#phone");
+
+const iti = window.intlTelInput(input, {
+
+initialCountry: "in",
+
+separateDialCode: true,
+
+preferredCountries: ["in","us","gb","ae"],
+
+utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"
+
+});
+
+
+// Only numbers + max 10 digits
+input.addEventListener("input", function(){
+
+this.value = this.value.replace(/[^0-9]/g,'');
+
+if(this.value.length > 10){
+this.value = this.value.slice(0,10);
+}
+
+});
+
+</script>
+
+{% endblock %}

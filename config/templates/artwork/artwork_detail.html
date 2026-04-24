@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Artwork Detail{% endblock %}
+
+{% block content %}
+
+<style>
+.artwork-hero {
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    padding: 60px 0;
+}
+
+.art-card {
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    transition: 0.4s ease;
+}
+
+.art-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 30px 70px rgba(0,0,0,0.35);
+}
+
+.art-image {
+    height: 420px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.price-tag {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(90deg,#00c6ff,#0072ff);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+
+.artist-name {
+    font-size: 16px;
+    color: #6c757d;
+    letter-spacing: 0.5px;
+}
+
+.desc-box {
+    background: #f8fafc;
+    padding: 18px;
+    border-radius: 12px;
+    border-left: 4px solid #0d6efd;
+}
+
+.back-btn {
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-weight: 600;
+    letter-spacing: .5px;
+    transition: 0.3s;
+}
+
+.back-btn:hover {
+    background: #0d6efd;
+    color: white;
+    transform: translateY(-2px);
+}
+</style>
+
+<div class="artwork-hero">
+
+<div class="container">
+
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <div class="art-card">
+
+                {% if artwork.image %}
+                    <img src="{{ artwork.image.url }}"
+                         class="art-image">
+                {% endif %}
+
+                <div class="p-5">
+
+                    <h2 class="fw-bold mb-1">
+                        {{ artwork.title }}
+                    </h2>
+
+                    <p class="artist-name mb-3">
+                        🎨 Created by {{ artwork.artist.username }}
+                    </p>
+
+                    <div class="price-tag mb-4">
+                        ₹ {{ artwork.price }}
+                    </div>
+
+                    <div class="desc-box mb-4">
+                        {{ artwork.description }}
+                    </div>
+
+                    <a href="{% url 'artwork_marketplace' %}"
+                       class="btn btn-outline-primary back-btn">
+                        ← Back to Marketplace
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+</div>
+
+{% endblock %}

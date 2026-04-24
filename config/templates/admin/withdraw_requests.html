@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+.withdraw-wrapper{
+padding:40px 20px;
+}
+
+/* title */
+
+.withdraw-title{
+text-align:center;
+font-weight:800;
+margin-bottom:30px;
+}
+
+/* card */
+
+.withdraw-card{
+background:rgba(255,255,255,0.12);
+backdrop-filter:blur(14px);
+border-radius:20px;
+padding:25px;
+box-shadow:0 20px 50px rgba(0,0,0,0.2);
+}
+
+/* table */
+
+.withdraw-table thead{
+background:#111;
+color:white;
+}
+
+.withdraw-table tbody tr{
+transition:.2s;
+}
+
+.withdraw-table tbody tr:hover{
+background:#f7f7f7;
+}
+
+/* buttons */
+
+.btn-process{
+border-radius:20px;
+font-weight:600;
+}
+
+.btn-reject{
+border-radius:20px;
+font-weight:600;
+}
+
+/* status badges */
+
+.status-paid{
+background:#28a745;
+}
+
+.status-rejected{
+background:#dc3545;
+}
+
+</style>
+
+<div class="container withdraw-wrapper">
+
+<h3 class="withdraw-title">💰 Withdraw Requests</h3>
+
+<div class="withdraw-card">
+
+<table class="table withdraw-table table-hover align-middle">
+
+<thead>
+<tr>
+<th>User</th>
+<th>Amount</th>
+<th>Status</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for r in requests %}
+
+<tr>
+
+<td>
+<strong>{{ r.user.username }}</strong>
+</td>
+
+<td>
+₹ {{ r.amount }}
+</td>
+
+<td>
+
+{% if r.status == "pending" %}
+
+<span class="badge bg-warning text-dark">
+Pending
+</span>
+
+{% elif r.status == "paid" %}
+
+<span class="badge status-paid">
+Paid
+</span>
+
+{% elif r.status == "rejected" %}
+
+<span class="badge status-rejected">
+Rejected
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+{{ r.created_at }}
+</td>
+
+<td>
+
+{% if r.status == "pending" %}
+
+<a href="{% url 'payout_withdraw' r.id %}"
+class="btn btn-success btn-sm btn-process">
+✔ Process Payout
+</a>
+
+<a href="{% url 'reject_withdraw' r.id %}"
+class="btn btn-danger btn-sm btn-reject">
+✖ Reject
+</a>
+
+{% elif r.status == "paid" %}
+
+<span class="badge status-paid">
+Paid
+</span>
+
+{% elif r.status == "rejected" %}
+
+<span class="badge status-rejected">
+Rejected
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+{% endblock %}

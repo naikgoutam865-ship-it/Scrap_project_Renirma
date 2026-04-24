@@ -1,0 +1,168 @@
+<!-- ARTIST KAA APPROVED SCRAP PAGE -->
+
+{% extends "base.html" %}
+{% block title %}Approved Scraps{% endblock %}
+
+{% block content %}
+
+<style>
+
+    body{
+        background: linear-gradient(120deg,#f5f7ff,#eefdf6);
+    }
+
+    .royal-card{
+        border-radius:18px;
+        overflow:hidden;
+        transition:0.4s ease;
+        box-shadow:0 15px 35px rgba(0,0,0,0.15);
+        background:#fff;
+        position:relative;
+    }
+
+    .royal-card:hover{
+        transform:translateY(-10px) scale(1.02);
+        box-shadow:0 25px 60px rgba(0,0,0,0.25);
+    }
+
+    .royal-img{
+        height:200px;
+        object-fit:cover;
+        width:100%;
+    }
+
+    .royal-badge{
+        position:absolute;
+        top:12px;
+        right:12px;
+        background:linear-gradient(45deg,#198754,#0d6efd);
+        color:#fff;
+        padding:6px 12px;
+        border-radius:30px;
+        font-size:13px;
+        font-weight:600;
+        box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .royal-body{
+        padding:22px;
+        text-align:center;
+    }
+
+    .royal-body h5{
+        font-weight:700;
+        margin-bottom:8px;
+    }
+
+    .royal-body p{
+        margin-bottom:6px;
+        color:#555;
+    }
+
+    .royal-btn{
+        border-radius:40px;
+        padding:10px;
+        font-weight:600;
+        transition:0.3s ease;
+    }
+
+    .btn-pay{
+        background:linear-gradient(45deg,#ff9800,#ff5722);
+        border:none;
+        color:#fff;
+    }
+
+    .btn-pay:hover{
+        transform:translateY(-2px);
+        box-shadow:0 8px 25px rgba(255,87,34,0.45);
+    }
+
+    .btn-convert{
+        background:linear-gradient(45deg,#0d6efd,#6610f2);
+        border:none;
+        color:#fff;
+    }
+
+    .btn-convert:hover{
+        transform:translateY(-2px);
+        box-shadow:0 8px 25px rgba(102,16,242,0.45);
+    }
+
+</style>
+
+
+<div class="container mt-5">
+
+    <h3 class="mb-4 text-center fw-bold">
+        ✨ Approved Scraps Ready for Artwork
+    </h3>
+
+    <div class="row">
+
+        {% for req in requests %}
+        <div class="col-md-4 mb-4">
+
+            <div class="royal-card">
+
+                <span class="royal-badge">
+                    Approved
+                </span>
+
+                {% if req.scrap.image %}
+                    <img src="{{ req.scrap.image.url }}" class="royal-img">
+                {% endif %}
+
+                <div class="royal-body">
+
+                    <h5>{{ req.scrap.category|title }}</h5>
+
+                    <p>
+                        <strong>Approved Weight:</strong>
+                        {{ req.requested_weight }} kg
+                    </p>
+
+                    <p>
+                        <strong>Price/kg:</strong>
+                        ₹ {{ req.scrap.price_per_kg }}
+                    </p>
+
+                    <p>
+                        <strong>Seller:</strong>
+                        {{ req.scrap.seller.username }}
+                    </p>
+
+                    <div class="mt-3">
+
+                        {% if not req.is_paid %}
+                            <a href="{% url 'scrap_payment' req.id %}"
+                               class="btn royal-btn btn-pay w-100">
+                                💳 Pay for Scrap
+                            </a>
+                        {% else %}
+                            <a href="{% url 'convert_to_artwork' req.id %}"
+                               class="btn royal-btn btn-convert w-100">
+                                🎨 Convert to Artwork
+                            </a>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center shadow">
+                No approved scraps yet.
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

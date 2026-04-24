@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Pickup History{% endblock %}
+
+{% block content %}
+
+<h3 class="mb-4">🚚 Pickup History</h3>
+
+<table class="table">
+
+<thead>
+<tr>
+<th>Scrap</th>
+<th>Buyer</th>
+<th>Weight</th>
+<th>Status</th>
+<th>Date</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for p in pickups %}
+
+<tr>
+<td>{{ p.scrap.category }}</td>
+<td>{{ p.requested_by.username }}</td>
+<td>{{ p.requested_weight }} kg</td>
+<td>{{ p.pickup_status }}</td>
+<td>{{ p.pickup_date }}</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% endblock %}

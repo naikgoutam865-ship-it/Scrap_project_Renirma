@@ -1,0 +1,168 @@
+<!-- ye user kaa request recieved page hey samjhe na jaha user request dekh taa hey  -->
+{% extends "base.html" %}
+
+{% block title %}Requests Received{% endblock %}
+
+{% block content %}
+
+<style>
+.request-card{
+border-radius:18px;
+transition:.3s;
+animation:fadeUp .6s ease forwards;
+opacity:0;
+}
+
+.request-card:hover{
+transform:translateY(-6px);
+box-shadow:0 12px 30px rgba(0,0,0,.15);
+}
+
+.status-badge{
+padding:6px 14px;
+border-radius:20px;
+font-size:13px;
+font-weight:600;
+}
+
+.status-pending{
+background:#fff3cd;
+color:#856404;
+}
+
+.status-approved{
+background:#d1e7dd;
+color:#0f5132;
+}
+
+.status-rejected{
+background:#f8d7da;
+color:#842029;
+}
+
+@keyframes fadeUp{
+from{transform:translateY(30px);opacity:0;}
+to{transform:translateY(0);opacity:1;}
+}
+</style>
+
+<h3 class="mb-4 fw-bold">📩 Requests Received</h3>
+
+<div class="row">
+
+{% for req in requests %}
+
+<div class="col-md-6 mb-4">
+
+<div class="card request-card p-3">
+
+<div class="d-flex gap-3 align-items-center">
+
+{% if req.scrap.image %}
+<img src="{{ req.scrap.image.url }}"
+style="width:90px;height:90px;object-fit:cover;border-radius:12px;">
+{% endif %}
+
+<div class="flex-grow-1">
+
+<h6 class="mb-1 fw-bold">
+{{ req.scrap.category|title }} Scrap
+</h6>
+
+<p class="mb-1 text-muted">
+Requested by <strong>{{ req.requested_by.username }}</strong>
+</p>
+
+<p class="mb-1">
+Requested Weight:
+<strong>{{ req.requested_weight }} kg</strong>
+</p>
+
+<p class="mb-1">
+Available Weight:
+<strong>{{ req.scrap.available_weight|default:req.scrap.weight_kg }} kg</strong>
+</p>
+
+<p class="mb-1">
+Pickup Status:
+<strong>{{ req.pickup_status|title }}</strong>
+</p>
+
+{% if req.pickup_time %}
+<p class="mb-1">
+Pickup Time:
+<strong>{{ req.pickup_time|title }}</strong>
+</p>
+{% endif %}
+
+{% if req.pickup_date %}
+<p class="mb-1">
+Pickup Date:
+<strong>{{ req.pickup_date }}</strong>
+</p>
+{% endif %}
+
+{% if req.pickup_contact %}
+<p class="mb-1">
+Pickup Contact:
+<strong>{{ req.pickup_contact }}</strong>
+</p>
+{% endif %}
+
+<span class="status-badge
+{% if req.status == 'pending' %}status-pending{% endif %}
+{% if req.status == 'approved' %}status-approved{% endif %}
+{% if req.status == 'rejected' %}status-rejected{% endif %}
+">
+{{ req.status|title }}
+</span>
+
+</div>
+
+
+<div class="text-end">
+
+{% if req.status == "pending" %}
+
+<a href="{% url 'update_request_status' req.id 'approved' %}"
+class="btn btn-success btn-sm mb-1">
+✔ Approve
+</a>
+
+<a href="{% url 'update_request_status' req.id 'rejected' %}"
+class="btn btn-danger btn-sm mb-1">
+✖ Reject
+</a>
+
+{% endif %}
+
+{% if req.pickup_status == "pending" and req.status == "approved" %}
+
+<a href="{% url 'pickup_complete' req.id %}"
+class="btn btn-primary btn-sm">
+📦 Mark Picked Up
+</a>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<div class="col-12">
+<div class="alert alert-info text-center">
+No requests received yet.
+</div>
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,39 @@
+<form id="razorpay-form" method="POST" action="{% url 'payment_success' %}">
+    {% csrf_token %}
+    <input type="hidden" name="razorpay_payment_id" id="payment_id">
+    <input type="hidden" name="razorpay_order_id" id="order_id">
+    <input type="hidden" name="razorpay_signature" id="signature">
+    <input type="hidden" name="artwork_id" value="{{ artwork.id }}">
+</form>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+var options = {
+    "key": "{{ razorpay_key }}",
+    "amount": "{{ amount|floatformat:0 }}00",
+    "currency": "INR",
+    "name": "ReNirma",
+    "description": "Artwork Purchase",
+    "order_id": "{{ razorpay_order_id }}",
+
+    // 🔥 ADD THIS
+    "method": {
+        "upi": true,
+        "card": true,
+        "netbanking": true,
+        "wallet": true
+    },
+
+    "handler": function (response){
+
+        document.getElementById('payment_id').value = response.razorpay_payment_id;
+        document.getElementById('order_id').value = response.razorpay_order_id;  // 🔥 THIS LINE
+        document.getElementById('signature').value = response.razorpay_signature;
+
+        document.getElementById('razorpay-form').submit();
+    }
+};
+var rzp = new Razorpay(options);
+rzp.open();
+</script>

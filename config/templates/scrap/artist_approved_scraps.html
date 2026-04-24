@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Approved Scraps{% endblock %}
+
+{% block content %}
+
+<h3 class="mb-4">✅ Approved Scraps</h3>
+
+<div class="table-responsive">
+
+<table class="table table-bordered table-striped">
+
+    <thead class="table-dark">
+        <tr>
+            <th>Category</th>
+            <th>Weight</th>
+            <th>Price / kg</th>
+            <th>Location</th>
+            <th>Seller</th>
+            <th>Status</th>
+            <th>Image</th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+
+    {% for r in requests %}
+
+        <tr>
+            <td>{{ r.scrap.category|title }}</td>
+            <td>
+                {% if scrap.image %}
+                    <img src="{{ scrap.image.url }}"
+                        width="80"
+                        height="80"
+                        style="object-fit: cover;">
+                {% else %}
+                    No Image
+                {% endif %}
+            </td>
+
+            <td>{{ r.scrap.weight_kg }} kg</td>
+            <td>₹ {{ r.scrap.price_per_kg }}</td>
+            <td>{{ r.scrap.location }}</td>
+            <td>{{ r.scrap.seller.username }}</td>
+            <td>
+                <span class="badge bg-success">
+                    Approved
+                </span>
+            </td>
+        </tr>
+
+    {% empty %}
+
+        <tr>
+            <td colspan="6" class="text-center">
+                No approved scraps yet
+            </td>
+        </tr>
+
+    {% endfor %}
+
+    </tbody>
+</table>
+</div>
+
+{% endblock %}

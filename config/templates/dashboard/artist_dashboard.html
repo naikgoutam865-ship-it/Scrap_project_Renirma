@@ -1,0 +1,185 @@
+<!-- YE HEY ARTIST KAA DASH BOARD PAGE  -->
+
+{% extends "base.html" %}
+{% block title %}Artist Dashboard{% endblock %}
+{% block content %}
+
+<style>
+
+body{
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+}
+
+/* Header */
+.dashboard-header{
+    background: linear-gradient(135deg,#ff6a00,#ee0979);
+    padding:50px;
+    border-radius:30px;
+    text-align:center;
+    margin-bottom:60px;
+    box-shadow:0 25px 60px rgba(0,0,0,0.5);
+}
+
+/* ===== STAT CARDS ===== */
+.stat-wrap{
+    display:flex;
+    justify-content:center;
+    gap:60px;
+    margin-bottom:60px;
+    flex-wrap:wrap;
+}
+
+.stat-box{
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    padding:35px 60px;
+    border-radius:25px;
+    text-align:center;
+    box-shadow:0 15px 40px rgba(0,0,0,0.4);
+    transition:0.4s;
+    min-width:240px;
+}
+
+.stat-box:hover{
+    transform:translateY(-8px) scale(1.05);
+    box-shadow:0 30px 60px rgba(0,0,0,0.6);
+}
+
+.stat-box h6{
+    opacity:0.7;
+    font-weight:600;
+}
+
+.stat-box h2{
+    font-size:42px;
+    font-weight:800;
+    margin-top:10px;
+}
+
+/* ===== ACTION CARDS ===== */
+.action-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:30px;
+}
+
+.action-card{
+    background: linear-gradient(145deg,#0f172a,#020617);
+    padding:35px;
+    border-radius:25px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.5);
+    transition:0.4s;
+}
+
+.action-card:hover{
+    transform:translateY(-10px);
+    box-shadow:0 25px 60px rgba(0,0,0,0.7);
+}
+
+.action-card h5{
+    font-weight:700;
+    margin-bottom:10px;
+}
+
+.action-card p{
+    opacity:.7;
+    margin-bottom:20px;
+}
+
+.btn-soft{
+    padding:10px 22px;
+    border-radius:30px;
+    font-weight:600;
+    border:none;
+}
+.info-panel{
+    background:rgba(255,255,255,0.04);
+    border-radius:30px;
+    padding:40px;
+    margin-top:45px;
+    backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,0.08);
+
+    color:#38bdf8;   /* 👈 TEXT COLOR CHANGE */
+}
+</style>
+
+
+<!-- HEADER -->
+<div class="dashboard-header">
+    <h2>🎨 Welcome {{ request.user.username }}</h2>
+    <p>Create masterpieces from scrap & grow your creative empire</p>
+</div>
+
+
+<!-- ===== TOP STATS ===== -->
+<div class="stat-wrap">
+
+    <div class="stat-box">
+        <h6>Total Artworks</h6>
+        <h2>{{ total_artworks }}</h2>
+    </div>
+
+    <div class="stat-box">
+        <h6>Total Earnings</h6>
+        <h2>{{ total_earnings }}</h2>
+    </div>
+
+</div>
+
+
+<!-- ===== ACTION CARDS ===== -->
+<div class="action-grid">
+
+    <div class="action-card">
+        <h5>📦 Approved Scraps</h5>
+        <p>Convert approved scraps into valuable artwork.</p>
+        <a href="{% url 'artist_approved_scraps' %}" class="btn btn-primary btn-soft">
+            Open Scraps
+        </a>
+    </div>
+
+    <div class="action-card">
+        <h5>🖼 My Artworks</h5>
+        <p>Manage your artworks and update pricing.</p>
+        <a href="{% url 'my_artworks' %}" class="btn btn-success btn-soft">
+            View Artworks
+        </a>
+    </div>
+
+    <div class="action-card">
+        <h5>💰 Sold Artworks</h5>
+        <p>Track sales and performance.</p>
+        <a href="{% url 'sold_artworks' %}" class="btn btn-warning btn-soft">
+            View Sales
+        </a>
+    </div>
+
+    <div class="action-card">
+        <h5>🌍 Marketplace</h5>
+        <p>See what buyers are exploring.</p>
+        <a href="{% url 'artwork_marketplace' %}" class="btn btn-dark btn-soft">
+            Visit Market
+        </a>
+    </div>
+
+</div>
+
+<!-- INFO PANEL -->
+<div class="info-panel">
+    <h4>🚀 Your Artist Journey</h4>
+    <p>
+        You are not just selling scrap art.
+        You are building a sustainable creative brand.
+    </p>
+
+    <ul>
+        <li>✔ Turn waste into premium art</li>
+        <li>✔ Earn directly from buyers</li>
+        <li>✔ Build your creative reputation</li>
+        <li>✔ Scale your artwork portfolio</li>
+    </ul>
+</div>
+
+{% endblock %}

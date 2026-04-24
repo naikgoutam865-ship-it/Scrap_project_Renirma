@@ -1,0 +1,162 @@
+<!-- JAHA PE ALL REVIEWS DIKHTAA HEY  -->
+
+{% extends "base.html" %}
+{% block title %}Reviews{% endblock %}
+
+{% block content %}
+
+<style>
+
+    /* 🌌 PREMIUM BACKGROUND */
+    body{
+        background: radial-gradient(circle at top,#111827,#020617);
+        color:white;
+    }
+
+    /* ⭐ TITLE */
+    .review-title{
+        text-align:center;
+        font-weight:700;
+        letter-spacing:1px;
+        margin-bottom:35px;
+        color:white;
+        text-shadow:0 0 12px rgba(0,255,200,0.4);
+    }
+
+    /* ➕ ADD BUTTON */
+    .add-review-btn{
+        background: linear-gradient(135deg,#06b6d4,#3b82f6);
+        border:none;
+        padding:12px 32px;
+        border-radius:50px;
+        font-weight:600;
+        box-shadow:0 0 25px rgba(0,255,255,0.35);
+        transition:.35s;
+    }
+    .add-review-btn:hover{
+        transform:translateY(-3px);
+        box-shadow:0 0 45px rgba(0,255,255,0.6);
+    }
+
+    /* 💎 GLASS CARD */
+    .review-card{
+        background:rgba(255,255,255,0.05);
+        backdrop-filter: blur(18px);
+        border-radius:20px;
+        padding:20px;
+        border:1px solid rgba(255,255,255,0.12);
+        transition:.4s;
+        box-shadow:0 10px 40px rgba(0,0,0,0.4);
+    }
+
+    .review-card:hover{
+        transform:translateY(-8px) scale(1.02);
+        box-shadow:0 20px 60px rgba(0,0,0,0.7);
+        border:1px solid rgba(0,255,200,0.35);
+    }
+
+    /* 🎨 TITLE */
+    .review-card h5{
+        font-weight:700;
+        color:#e2e8f0;
+    }
+
+    /* 🎭 ARTIST TEXT */
+    .artist-text{
+        font-size:14px;
+        opacity:.7;
+    }
+
+    /* ⭐ STARS */
+    .stars{
+        font-size:18px;
+        letter-spacing:2px;
+        color:#facc15;
+        text-shadow:0 0 8px rgba(255,255,0,0.7);
+    }
+
+    /* 💬 COMMENT */
+    .review-text{
+        font-size:15px;
+        line-height:1.6;
+        color:#cbd5e1;
+        margin-top:10px;
+
+        /* 🔥 FIX START */
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        white-space: normal;
+    }
+
+    /* 👤 FOOTER */
+    .review-meta{
+        font-size:13px;
+        opacity:.55;
+        margin-top:15px;
+    }
+
+    /* 🪟 EMPTY BOX */
+    .empty-box{
+        background:rgba(255,255,255,0.05);
+        border-radius:20px;
+        padding:50px;
+        backdrop-filter:blur(12px);
+        border:1px solid rgba(255,255,255,0.1);
+        box-shadow:0 10px 40px rgba(0,0,0,0.5);
+    }
+
+</style>
+
+
+<h3 class="review-title">⭐ User Reviews</h3>
+
+{% if user.is_authenticated and user.role != "artist" %}
+<div class="text-center mb-4">
+    <a href="{% url 'add_review' %}" class="btn add-review-btn">
+        ➕ Add Review
+    </a>
+</div>
+{% endif %}
+
+<div class="row">
+
+{% for r in reviews %}
+
+<div class="col-md-4 mb-4">
+<div class="review-card h-100">
+
+<h5>{{ r.scrap_type }}</h5>
+<p class="artist-text">Artist: {{ r.artist_name }}</p>
+
+<p class="stars">
+{% for i in "12345"|make_list %}
+    {% if forloop.counter <= r.rating %}
+        ⭐
+    {% endif %}
+{% endfor %}
+</p>
+
+<p class="review-text">{{ r.comment }}</p>
+
+<div class="review-meta">
+by {{ r.user.username }} • {{ r.created_at|date:"d M Y" }}
+</div>
+
+</div>
+</div>
+
+{% empty %}
+<div class="col-12 text-center">
+    <div class="empty-box">
+        <h5>No reviews yet</h5>
+        <p class="text-muted mb-0">
+            Be the first to share your experience ✨
+        </p>
+    </div>
+</div>
+{% endfor %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,139 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* Wrapper (IMPORTANT) */
+.royal-page {
+    background: linear-gradient(135deg, #1e1e2f, #2c2c54);
+    padding: 20px;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+}
+
+/* Heading */
+.royal-page h3 {
+    text-align: center;
+    margin: 20px 0;
+    font-weight: 600;
+    color: #f5c542;
+    letter-spacing: 1px;
+}
+
+/* Table Styling */
+.royal-page .table {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Header */
+.royal-page .table thead {
+    background: linear-gradient(135deg, #3a0ca3, #7209b7);
+    color: #fff;
+}
+
+.royal-page th {
+    text-align: center;
+    padding: 12px;
+    font-weight: 500;
+}
+
+/* Body */
+.royal-page td {
+    text-align: center;
+    padding: 12px;
+    border-color: rgba(255,255,255,0.1);
+}
+
+/* Hover */
+.royal-page tbody tr:hover {
+    background: rgba(255,255,255,0.08);
+    transition: 0.3s ease;
+}
+
+/* Badge */
+.royal-page .badge.bg-success {
+    background: linear-gradient(135deg, #00c853, #69f0ae) !important;
+    color: #000;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+/* Button */
+.royal-page .btn-primary {
+    background: linear-gradient(135deg, #ff9f1c, #ffbf69);
+    border: none;
+    color: #000;
+    border-radius: 25px;
+    padding: 6px 16px;
+}
+
+.royal-page .btn-primary:hover {
+    background: linear-gradient(135deg, #ffd166, #ffe29a);
+    transform: scale(1.05);
+}
+
+/* Empty Row */
+.royal-page td[colspan="5"] {
+    color: #ccc;
+    font-style: italic;
+}
+
+</style>
+
+<div class="royal-page">
+
+<h3>Approved Scraps</h3>
+
+<table class="table table-bordered">
+
+<thead>
+<tr>
+<th>Category</th>
+<th>Weight</th>
+<th>Price/kg</th>
+<th>Seller</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for r in scraps %}
+<tr>
+<td>{{ r.scrap.category }}</td>
+<td>{{ r.requested_weight }} kg</td>
+<td>₹ {{ r.scrap.price_per_kg }}</td>
+<td>{{ r.scrap.seller.username }}</td>
+
+<td>
+{% if r.is_paid %}
+    <span class="badge bg-success">Paid</span>
+{% else %}
+    <a href="{% url 'dealer_scrap_payment' r.id %}" class="btn btn-primary">Pay</a>
+{% endif %}
+</td>
+
+</tr>
+{% empty %}
+<tr>
+<td colspan="5">No approved scraps</td>
+</tr>
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}
+

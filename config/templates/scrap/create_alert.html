@@ -1,0 +1,106 @@
+<!-- Notify me bala page  -->
+
+{% extends "base.html" %}
+{% block title %}Create Scrap Alert{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* 🌌 Page glow background */
+body{
+    background: radial-gradient(circle at top, #0f2027, #203a43, #2c5364);
+}
+
+/* 💎 Glass card */
+.alert-card{
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(18px);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+    color: white;
+}
+
+/* 🧾 Title styling */
+.alert-title{
+    font-weight: 700;
+    letter-spacing: .5px;
+    color: #efe4e4;
+}
+
+/* ✍️ Inputs premium look */
+.alert-card input,
+.alert-card select{
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgb(255, 255, 255);
+    border-radius: 10px;
+}
+
+.alert-card input:focus,
+.alert-card select:focus{
+    border-color: #ffc107;
+    box-shadow: 0 0 12px rgba(255,193,7,0.6);
+    background: rgba(255,255,255,0.1);
+    color: rgb(0, 0, 0);
+}
+
+/* placeholder color */
+.alert-card input::placeholder{
+    color: rgba(255,255,255,0.6);
+}
+
+/* 🟡 Premium button */
+.alert-btn{
+    background: linear-gradient(90deg,#ffc107,#ff9800);
+    border:none;
+    border-radius:12px;
+    font-weight:600;
+    transition:.3s;
+    box-shadow: 0 6px 20px rgba(255,193,7,0.4);
+}
+
+.alert-btn:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(255,193,7,0.7);
+}
+
+</style>
+
+<div class="container mt-5">
+
+    <h3 class="mb-4 text-center alert-title">
+        🔔 Create Scrap Availability Alert
+    </h3>
+
+    <div class="alert-card shadow p-4 col-md-6 mx-auto">
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <label class="form-label">Scrap Category</label>
+            <select name="category" class="form-control mb-3" required>
+                <option value="plastic">Plastic</option>
+                <option value="metal">Metal</option>
+                <option value="paper">Paper</option>
+                <option value="ewaste">E-Waste</option>
+                <option value="glass">Glass</option>
+            </select>
+
+            <label class="form-label">Minimum Weight Needed</label>
+            <input type="number" step="0.01" name="weight"
+                   class="form-control mb-4"
+                   placeholder="Optional">
+
+            <button class="btn alert-btn w-100 text-dark">
+                🔔 Notify Me When Available
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

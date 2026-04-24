@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+/* Background */
+body{
+    background: linear-gradient(135deg,#78e3fe,#243B55);
+}
+
+/* Title */
+.page-title{
+    font-weight:800;
+    text-align:center;
+    margin-bottom:30px;
+    color:#fff;
+}
+
+/* Card */
+.category-card{
+    border-radius:20px;
+    background:rgba(255,255,255,0.85);
+    backdrop-filter:blur(10px);
+    padding:25px;
+    box-shadow:0 15px 35px rgba(0,0,0,0.15);
+    transition:all .35s ease;
+    height:100%;
+    position:relative;
+    overflow:hidden;
+}
+
+/* Hover effect */
+.category-card:hover{
+    transform:translateY(-8px) scale(1.02);
+    box-shadow:0 25px 50px rgba(0,0,0,0.25);
+}
+
+/* Icon */
+.category-icon{
+    font-size:40px;
+    margin-bottom:10px;
+}
+
+/* Title */
+.category-title{
+    font-weight:700;
+    margin-bottom:15px;
+}
+
+/* Buttons */
+.category-btn{
+    border-radius:30px;
+    font-size:13px;
+    padding:6px 14px;
+    margin:5px 5px 0 0;
+    transition:.3s;
+}
+
+.category-btn:hover{
+    transform:scale(1.05);
+}
+
+/* Glow border */
+.category-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:20px;
+    padding:2px;
+    opacity:0;
+    pointer-events: none;
+}
+
+.category-card:hover::before{
+    opacity:1;
+}
+
+</style>
+
+<h3 class="page-title">♻️ Select Scrap Category</h3>
+
+<div class="row g-4">
+
+<!-- PAPER -->
+<div class="col-md-4">
+    <div class="category-card text-center">
+        <div class="category-icon">📄</div>
+        <h5 class="category-title">Paper Scrap</h5>
+
+        <a href="{% url 'add_scrap' %}?category=newspaper" class="btn btn-outline-primary category-btn">📰 Newspaper</a>
+        <a href="{% url 'add_scrap' %}?category=books" class="btn btn-outline-primary category-btn">📚 Books</a>
+        <a href="{% url 'add_scrap' %}?category=cardboard" class="btn btn-outline-primary category-btn">📦 Cardboard</a>
+        <a href="{% url 'add_scrap' %}?category=other"
+        class="btn btn-outline-danger category-btn">
+        ➕ Others
+        </a>
+    </div>
+</div>
+
+<!-- METAL -->
+<div class="col-md-4">
+    <div class="category-card text-center">
+        <div class="category-icon">🔩</div>
+        <h5 class="category-title">Metal Scrap</h5>
+
+        <a href="{% url 'add_scrap' %}?category=iron" class="btn btn-outline-dark category-btn">⚙️ Iron</a>
+        <a href="{% url 'add_scrap' %}?category=aluminium" class="btn btn-outline-dark category-btn">🥫 Aluminium</a>
+        <a href="{% url 'add_scrap' %}?category=copper" class="btn btn-outline-dark category-btn">🔌 Copper</a>
+        <a href="{% url 'add_scrap' %}?category=other"
+        class="btn btn-outline-danger category-btn">
+        ➕ Others
+        </a>
+    </div>
+</div>
+
+<!-- PLASTIC -->
+<div class="col-md-4">
+    <div class="category-card text-center">
+        <div class="category-icon">🧴</div>
+        <h5 class="category-title">Plastic Scrap</h5>
+
+        <a href="{% url 'add_scrap' %}?category=bottle" class="btn btn-outline-success category-btn">🍶 Bottle</a>
+        <a href="{% url 'add_scrap' %}?category=container" class="btn btn-outline-success category-btn">🧊 Container</a>
+        <a href="{% url 'add_scrap' %}?category=polythene" class="btn btn-outline-success category-btn">🛍️ Polythene</a>
+        <a href="{% url 'add_scrap' %}?category=other"
+        class="btn btn-outline-danger category-btn">
+        ➕ Others
+        </a>
+    </div>
+</div>
+
+<!-- E-WASTE -->
+<div class="col-md-4">
+    <div class="category-card text-center">
+        <div class="category-icon">💻</div>
+        <h5 class="category-title">E-Waste</h5>
+
+        <a href="{% url 'add_scrap' %}?category=mobile" class="btn btn-outline-warning category-btn">📱 Mobile</a>
+        <a href="{% url 'add_scrap' %}?category=laptop" class="btn btn-outline-warning category-btn">💻 Laptop</a>
+        <a href="{% url 'add_scrap' %}?category=electronics" class="btn btn-outline-warning category-btn">🔌 Electronics</a>
+        <a href="{% url 'add_scrap' %}?category=other"
+        class="btn btn-outline-danger category-btn">
+        ➕ Others
+        </a>
+    </div>
+</div>
+
+<!-- GLASS -->
+<div class="col-md-4">
+    <div class="category-card text-center">
+        <div class="category-icon">🍾</div>
+        <h5 class="category-title">Glass Scrap</h5>
+
+        <a href="{% url 'add_scrap' %}?category=glass_bottle" class="btn btn-outline-info category-btn">🍶 Bottle</a>
+        <a href="{% url 'add_scrap' %}?category=window_glass" class="btn btn-outline-info category-btn">🪟 Window Glass</a>
+        <a href="{% url 'add_scrap' %}?category=broken_glass" class="btn btn-outline-info category-btn">⚠️ Broken Glass</a>
+        <a href="{% url 'add_scrap' %}?category=other"
+        class="btn btn-outline-danger category-btn">
+        ➕ Others
+        </a>
+    </div>
+</div>
+
+<!-- CLOTH -->
+<div class="col-md-4">
+    <div class="category-card text-center">
+        <div class="category-icon">👕</div>
+        <h5 class="category-title">Cloth Scrap</h5>
+
+        <a href="{% url 'add_scrap' %}?category=cotton" class="btn btn-outline-secondary category-btn">👕 Cotton</a>
+        <a href="{% url 'add_scrap' %}?category=jeans" class="btn btn-outline-secondary category-btn">👖 Jeans</a>
+        <a href="{% url 'add_scrap' %}?category=fabric" class="btn btn-outline-secondary category-btn">🧵 Fabric</a>
+        <a href="{% url 'add_scrap' %}?category=other"
+        class="btn btn-outline-danger category-btn">
+        ➕ Others
+        </a>
+    </div>
+</div>
+
+</div>
+
+{% endblock %}

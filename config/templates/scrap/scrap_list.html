@@ -1,0 +1,155 @@
+<!-- ye oh page hey jaha saare scrap dikhte hein dealer ko -->
+<style>
+
+/* ===== PAGE TITLE ===== */
+
+.market-title{
+    font-weight:700;
+    margin-bottom:25px;
+}
+
+
+/* ===== GRID ===== */
+
+.market-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap:25px;
+}
+
+
+/* ===== CARD ===== */
+
+.scrap-card{
+    background:white;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 8px 20px rgba(0,0,0,0.12);
+    transition:.3s;
+}
+
+.scrap-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 15px 35px rgba(0,0,0,0.2);
+}
+
+
+/* ===== IMAGE ===== */
+
+.scrap-image img{
+    width:100%;
+    height:180px;
+    object-fit:cover;
+}
+
+
+/* ===== BODY ===== */
+
+.scrap-body{
+    padding:18px;
+}
+
+.scrap-body h5{
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+
+/* ===== META ===== */
+
+.scrap-meta{
+    font-size:14px;
+    color:#555;
+    margin-bottom:5px;
+}
+
+
+/* ===== PRICE ===== */
+
+.scrap-price{
+    font-size:18px;
+    font-weight:700;
+    margin:10px 0;
+    color:#27ae60;
+}
+
+
+/* ===== BUTTON ===== */
+
+.scrap-btn{
+    display:block;
+    text-align:center;
+    padding:10px;
+    border-radius:25px;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    color:white;
+    text-decoration:none;
+    font-weight:600;
+    transition:.3s;
+}
+
+.scrap-btn:hover{
+    transform:scale(1.05);
+}
+</style>
+
+{% extends "base.html" %}
+{% block title %}Scrap Marketplace{% endblock %}
+
+{% block content %}
+
+<h2 class="market-title">♻ Scrap Marketplace</h2>
+
+<div class="market-grid">
+
+{% for scrap in scraps %}
+
+<div class="scrap-card">
+
+    <div class="scrap-image">
+
+        {% if scrap.image %}
+        <img src="{{ scrap.image.url }}">
+        {% else %}
+        <img src="https://via.placeholder.com/300x200">
+        {% endif %}
+
+    </div>
+
+    <div class="scrap-body">
+
+        <h5>{{ scrap.category|title }}</h5>
+
+        <p class="scrap-meta">
+        📍 {{ scrap.location }}
+        </p>
+
+        <p class="scrap-meta">
+        ⚖ {{ scrap.available_weight }} kg available
+        </p>
+
+        <p class="scrap-meta">
+        👤 {{ scrap.seller.username }}
+        </p>
+
+        <div class="scrap-price">
+        ₹ {{ scrap.price_per_kg }} / kg
+        </div>
+
+        <a href="{% url 'request_scrap' scrap.id %}" class="scrap-btn">
+        Request Scrap
+        </a>
+
+    </div>
+
+</div>
+
+{% empty %}
+
+<p>No scrap available.</p>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

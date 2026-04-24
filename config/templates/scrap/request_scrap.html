@@ -1,0 +1,146 @@
+<!-- jab artist ko request bhej naa hota hey ye hey artist kaa request page jaha se oh request bhejega  -->
+
+{% extends 'base.html' %}
+
+{% block title %}Request Scrap{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* ===== PAGE ENTRY ===== */
+.container{
+    animation:fadeUp .6s ease;
+}
+@keyframes fadeUp{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+/* ===== TITLE ===== */
+.req-title{
+    text-align:center;
+    font-weight:700;
+    letter-spacing:.4px;
+}
+
+/* ===== CARD ===== */
+.req-card{
+    border:none;
+    border-radius:24px;
+    background:linear-gradient(135deg,#ffffff,#f7faff);
+    box-shadow:0 25px 60px rgba(0,0,0,.12);
+    overflow:hidden;
+}
+
+/* ===== HEADER STRIP ===== */
+.req-header{
+    background:linear-gradient(135deg,#0ea5e9,#2563eb);
+    color:#fff;
+    padding:18px;
+    text-align:center;
+    font-weight:600;
+    letter-spacing:.4px;
+}
+
+/* ===== INFO BOX ===== */
+.info-box{
+    background:#f8fafc;
+    border-radius:14px;
+    padding:14px 18px;
+    margin-bottom:10px;
+    font-size:15px;
+}
+
+/* ===== INPUT ===== */
+.form-control{
+    border-radius:12px;
+    padding:12px 14px;
+    border:1px solid #d1d5db;
+    transition:.3s;
+}
+
+.form-control:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 3px rgba(37,99,235,.15);
+}
+
+/* ===== BUTTON ===== */
+.req-btn{
+    background:linear-gradient(135deg,#10b981,#059669);
+    border:none;
+    padding:12px;
+    font-weight:600;
+    letter-spacing:.4px;
+    border-radius:12px;
+    color:#fff;
+    transition:.3s;
+}
+
+.req-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 30px rgba(0,0,0,.18);
+}
+
+/* ===== ALERT ===== */
+.alert{
+    border-radius:12px;
+    box-shadow:0 6px 15px rgba(0,0,0,.08);
+}
+
+</style>
+
+
+<h3 class="mb-4 req-title">
+    📦 Request Scrap
+</h3>
+
+<div class="card req-card shadow">
+
+    <div class="req-header">
+        Scrap Information
+    </div>
+
+    <div class="card-body p-4">
+
+        <div class="info-box">
+            <strong>Category:</strong> {{ scrap.category|title }}
+        </div>
+
+        <div class="info-box">
+            <strong>Price per kg:</strong> ₹{{ scrap.price_per_kg }}
+        </div>
+
+        <div class="info-box">
+            <strong>Available weight:</strong>
+            {{ scrap.available_weight|default:scrap.weight_kg }} kg
+        </div>
+
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">
+                    Required Quantity (kg)
+                </label>
+
+                <input type="number"
+                       step="0.01"
+                       name="requested_weight"
+                       class="form-control mb-3"
+                       placeholder="Enter required weight (kg)"
+                       required>
+            </div>
+
+            <div class="d-grid">
+                <button class="req-btn">
+                    🚀 Send Request
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

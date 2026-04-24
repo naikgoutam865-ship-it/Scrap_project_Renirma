@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+.finance-wrapper{
+padding:40px 20px;
+}
+
+/* title */
+
+.dashboard-title{
+text-align:center;
+font-weight:800;
+margin-bottom:35px;
+}
+
+/* stat cards */
+
+.stat-card{
+border:none;
+border-radius:18px;
+padding:25px;
+color:white;
+text-align:center;
+box-shadow:0 20px 40px rgba(0,0,0,0.2);
+transition:.3s;
+}
+
+.stat-card:hover{
+transform:translateY(-5px);
+}
+
+/* gradients */
+
+.revenue{
+background:linear-gradient(135deg,#11998e,#38ef7d);
+}
+
+.commission{
+background:linear-gradient(135deg,#fc466b,#3f5efb);
+}
+
+.artist{
+background:linear-gradient(135deg,#f7971e,#ffd200);
+}
+
+.pending{
+background:linear-gradient(135deg,#ff512f,#dd2476);
+}
+
+.scrap{
+background:linear-gradient(135deg,#56ab2f,#a8e063);
+}
+
+/* table card */
+
+.table-card{
+background:white;
+border-radius:18px;
+padding:25px;
+box-shadow:0 15px 40px rgba(0,0,0,0.15);
+}
+
+/* table */
+
+.table thead{
+background:#111;
+color:white;
+}
+
+.table tbody tr{
+transition:.2s;
+}
+
+.table tbody tr:hover{
+background:#f7f7f7;
+}
+
+/* button */
+
+.btn-settle{
+border-radius:20px;
+font-weight:600;
+}
+
+</style>
+
+<div class="container finance-wrapper">
+
+<h3 class="dashboard-title">💰 Admin Finance Dashboard</h3>
+
+<div class="row">
+
+<div class="col-md-4 mb-4">
+<div class="stat-card revenue">
+<h6>Total Revenue</h6>
+<h2>₹ {{ total_revenue|default:0 }}</h2>
+</div>
+</div>
+
+<div class="col-md-4 mb-4">
+<div class="stat-card commission">
+<h6>Total Commission</h6>
+<h2>₹ {{ total_commission|default:0 }}</h2>
+</div>
+</div>
+
+<div class="col-md-4 mb-4">
+<div class="stat-card artist">
+<h6>Total Artist Earnings</h6>
+<h2>₹ {{ total_artist_earnings|default:0 }}</h2>
+</div>
+</div>
+
+<div class="col-md-6 mb-4">
+<div class="stat-card pending">
+<h6>Pending Settlements</h6>
+<h2>{{ pending_settlements|default:0 }}</h2>
+</div>
+</div>
+
+<div class="col-md-6 mb-4">
+<div class="stat-card scrap">
+<h6>Scrap Payments Revenue</h6>
+<h2>₹ {{ scrap_revenue|default:0 }}</h2>
+</div>
+</div>
+
+</div>
+
+<div class="table-card mt-4">
+
+<h4 class="mb-3">⏳ Pending Settlements</h4>
+
+<table class="table table-hover">
+
+<thead>
+<tr>
+<th>Artwork</th>
+<th>Artist</th>
+<th>Amount</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for order in pending_orders %}
+
+<tr>
+<td>{{ order.artwork.title }}</td>
+<td>{{ order.artwork.artist.username }}</td>
+<td>₹ {{ order.artist_amount }}</td>
+<td>
+<a href="{% url 'mark_order_settled' order.id %}"
+class="btn btn-success btn-sm btn-settle">
+✔ Mark Settled
+</a>
+</td>
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="4" class="text-center">
+No pending settlements 🎉
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+{% endblock %}

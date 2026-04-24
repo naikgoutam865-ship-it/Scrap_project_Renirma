@@ -1,0 +1,162 @@
+<!-- YE HEY WISHLIST KAA PAGE JAHA USER APNI WISHLIST DEKH SAKTA HEY  -->
+
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+    body {
+        background: linear-gradient(135deg,#78e3fe,#243B55);
+    }   
+
+/* Page Title */
+.wishlist-title {
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #ff4d6d, #de0c0c);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Premium Card */
+.premium-card {
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    transition: all 0.35s ease;
+}
+
+.premium-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+}
+
+/* Image Styling */
+.premium-card img {
+    height: 230px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.premium-card:hover img {
+    transform: scale(1.05);
+}
+
+/* Title */
+.art-title {
+    font-weight: 700;
+    font-size: 18px;
+}
+
+/* Price */
+.art-price {
+    font-weight: 700;
+    color: #28a745;
+}
+
+/* Buy Button */
+.buy-btn {
+    background: linear-gradient(135deg, #6f42c1, #007bff);
+    border: none;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.buy-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* Remove Button */
+.remove-btn {
+    background: #ff4d6d;
+    border: none;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.remove-btn:hover {
+    background: #e0315b;
+    transform: translateY(-3px);
+}
+
+/* Empty State */
+.empty-box {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+}
+
+</style>
+
+<div class="container mt-5 mb-5">
+
+    <h3 class="text-center mb-5 wishlist-title">
+        ❤️ My Wishlist
+    </h3>
+
+    <div class="row">
+
+        {% for item in wishlist_items %}
+        <div class="col-md-4 mb-4">
+
+            <div class="card premium-card">
+
+                {% if item.artwork.image %}
+                    <img src="{{ item.artwork.image.url }}" class="card-img-top">
+                {% endif %}
+
+                <div class="card-body text-center">
+
+                    <h6 class="art-title mb-1">
+                        {{ item.artwork.title }}
+                    </h6>
+
+                    <p class="text-muted mb-2">
+                        by {{ item.artwork.artist.username }}
+                    </p>
+
+                    <p class="art-price mb-3">
+                        ₹ {{ item.artwork.price }}
+                    </p>
+
+                    <a href="{% url 'buy_product' item.artwork.id %}"
+                       class="btn buy-btn w-100 mb-2 text-white">
+                        🛒 Buy Now
+                    </a>
+
+                    <form method="POST"
+                          action="{% url 'toggle_wishlist' item.artwork.id %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="btn remove-btn w-100 text-white">
+                            Remove ❤️
+                        </button>
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+        <div class="col-12 text-center">
+            <div class="empty-box">
+                <h5>Your wishlist is empty 😢</h5>
+                <p class="text-muted">Start exploring artworks and add your favorites here.</p>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

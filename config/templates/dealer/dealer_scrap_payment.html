@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* Wrapper */
+.royal-payment {
+    background: linear-gradient(135deg, #7777be, #067d83);
+    padding: 40px;
+    border-radius: 15px;
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    max-width: 600px;
+    margin: 40px auto;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+
+/* Heading */
+.royal-payment h3 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 600;
+    color: #f5c542;
+    letter-spacing: 1px;
+}
+
+/* Info Box */
+.payment-card {
+    background: rgba(255,255,255,0.06);
+    padding: 25px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Labels */
+.payment-card p {
+    font-size: 15px;
+    margin: 10px 0;
+    color: #ddd;
+}
+
+/* Highlight Value */
+.payment-card span {
+    color: #fff;
+    font-weight: 500;
+}
+
+/* Amount Highlight */
+.amount {
+    font-size: 22px;
+    font-weight: 600;
+    color: #00e676;
+}
+
+/* Button */
+.pay-btn {
+    display: block;
+    width: 100%;
+    margin-top: 25px;
+    padding: 12px;
+    border-radius: 30px;
+    border: none;
+    font-weight: 600;
+    font-size: 16px;
+    background: linear-gradient(135deg, #ff9f1c, #ffd166);
+    color: #000;
+    transition: 0.3s ease;
+}
+
+.pay-btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #ffd166, #ffe29a);
+}
+
+/* Smooth fade */
+.royal-payment {
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+</style>
+
+<div class="royal-payment">
+
+<h3>Dealer Scrap Payment</h3>
+
+<div class="payment-card">
+
+<p><strong>Scrap:</strong> <span>{{ approved_request.scrap.category }}</span></p>
+
+<p><strong>Weight:</strong> <span>{{ approved_request.requested_weight }} kg</span></p>
+
+<p><strong>Total Amount:</strong>  
+<span class="amount">₹ {{ amount }}</span></p>
+
+<button id="pay-btn" class="pay-btn">
+Pay Now
+</button>
+
+</div>
+
+<form id="payment-form" method="POST" action="{% url 'dealer_scrap_payment_success' %}">
+{% csrf_token %}
+<input type="hidden" name="razorpay_payment_id">
+<input type="hidden" name="razorpay_order_id">
+<input type="hidden" name="razorpay_signature">
+</form>
+
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    console.log("Page Loaded");
+
+    var options = {
+        "key": "{{ razorpay_key }}",
+        "amount": "{{ amount_paise }}",
+        "currency": "INR",
+        "name": "ReNirma",
+        "description": "Scrap Payment",
+        "order_id": "{{ razorpay_order_id }}",
+
+        "handler": function (response){
+            console.log("Payment Success");
+
+            document.querySelector("input[name='razorpay_payment_id']").value = response.razorpay_payment_id;
+            document.querySelector("input[name='razorpay_order_id']").value = response.razorpay_order_id;
+            document.querySelector("input[name='razorpay_signature']").value = response.razorpay_signature;
+
+            document.getElementById("payment-form").submit();
+        }
+    };
+
+    var rzp = new Razorpay(options);
+
+    var btn = document.getElementById('pay-btn');
+
+    if(btn){
+        btn.onclick = function(e){
+            console.log("Button Clicked");
+            rzp.open();
+            e.preventDefault();
+        }
+    } else {
+        console.log("Button NOT found ❌");
+    }
+
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Terms & Conditions{% endblock %}
+
+{% block content %}
+
+<style>
+
+.terms-wrapper{
+min-height:80vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:40px 20px;
+}
+
+.terms-card{
+max-width:750px;
+width:100%;
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(18px);
+border-radius:22px;
+padding:40px;
+box-shadow:0 25px 60px rgba(0,0,0,0.25);
+animation:fadeUp .8s ease;
+}
+
+@keyframes fadeUp{
+from{
+opacity:0;
+transform:translateY(40px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+.terms-title{
+font-weight:800;
+margin-bottom:15px;
+text-align:center;
+}
+
+.terms-text{
+color:#6c757d;
+text-align:center;
+margin-bottom:25px;
+}
+
+.terms-list{
+list-style:none;
+padding-left:0;
+}
+
+.terms-list li{
+background:rgba(255,255,255,0.7);
+margin-bottom:12px;
+padding:12px 15px;
+border-radius:12px;
+display:flex;
+align-items:center;
+font-weight:500;
+transition:.3s;
+}
+
+.terms-list li:hover{
+transform:translateX(5px);
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+}
+
+.terms-list li::before{
+content:"✔";
+color:#28a745;
+font-weight:bold;
+margin-right:10px;
+}
+
+.terms-footer{
+text-align:center;
+margin-top:20px;
+color:#888;
+font-size:14px;
+}
+
+</style>
+
+<div class="terms-wrapper">
+
+<div class="terms-card">
+
+<h2 class="terms-title">📜 Terms & Conditions</h2>
+
+<p class="terms-text">
+By registering on <strong>ReNirma</strong>, you agree to the following rules and guidelines.
+</p>
+
+<ul class="terms-list">
+<li>Provide correct personal information</li>
+<li>Do not misuse the platform</li>
+<li>Respect sellers, artists, and dealers</li>
+<li>Payments once completed are non-refundable</li>
+<li>Platform may suspend accounts involved in fraud</li>
+</ul>
+
+<p class="terms-footer">
+Last updated: 2026
+</p>
+
+</div>
+
+</div>
+
+{% endblock %}

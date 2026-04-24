@@ -1,0 +1,157 @@
+<!-- SELL KAA FORM  -->
+
+{% extends "base.html" %}
+{% block title %}Sell Artwork{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* 🌌 Background */
+body{
+    background: radial-gradient(circle at top,#020617,#0f172a,#020617);
+}
+
+/* 🧊 Glass container */
+.sell-wrapper{
+    max-width:650px;
+    margin:auto;
+    background:rgba(255,255,255,0.06);
+    backdrop-filter: blur(20px);
+    border-radius:24px;
+    padding:40px;
+    border:1px solid rgba(255,255,255,0.12);
+    box-shadow:
+        0 0 40px rgba(0,0,0,0.5),
+        inset 0 0 30px rgba(255,255,255,0.04);
+    animation: glow 4s infinite alternate;
+}
+
+/* ✨ Glow animation */
+@keyframes glow{
+    from{ box-shadow:0 0 30px rgba(0,200,255,0.25);}
+    to{ box-shadow:0 0 55px rgba(0,200,255,0.55);}
+}
+
+/* 🖼 Title */
+.sell-title{
+    text-align:center;
+    font-weight:700;
+    color:white;
+    margin-bottom:30px;
+    letter-spacing:0.5px;
+    text-shadow:0 0 10px rgba(0,255,255,0.5);
+}
+
+/* 🧾 Labels */
+.form-label{
+    color:#cbd5e1;
+    font-weight:600;
+}
+
+/* 🧊 Inputs */
+.form-control{
+    border-radius:12px;
+    padding:12px 14px;
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.2);
+    color:white;
+    transition:.25s;
+}
+
+.form-control:focus{
+    background:rgba(255,255,255,0.18);
+    border-color:#38bdf8;
+    box-shadow:0 0 12px rgba(56,189,248,0.6);
+    color:white;
+}
+
+/* 🖼 Upload field highlight */
+input[type="file"]{
+    padding:10px;
+}
+
+/* 🚀 Buttons */
+.btn-send{
+    background:linear-gradient(120deg,#06b6d4,#3b82f6);
+    border:none;
+    border-radius:40px;
+    padding:12px 26px;
+    font-weight:600;
+    letter-spacing:.5px;
+    box-shadow:0 6px 22px rgba(0,255,255,0.35);
+    transition:.35s;
+    color:white;
+}
+
+.btn-send:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 35px rgba(0,255,255,0.7);
+}
+
+.btn-back{
+    border-radius:40px;
+    padding:12px 24px;
+    background:rgba(255,255,255,0.15);
+    border:1px solid rgba(255,255,255,0.2);
+    color:white;
+    transition:.3s;
+}
+
+.btn-back:hover{
+    background:rgba(255,255,255,0.25);
+    transform:translateY(-2px);
+}
+
+</style>
+
+
+<div class="container py-5">
+
+<div class="sell-wrapper">
+
+<h3 class="sell-title">🖼️ Sell Your Artwork</h3>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+<div class="mb-3">
+<label class="form-label">Artwork Title</label>
+<input type="text" name="title" class="form-control">
+</div>
+
+<div class="mb-3">
+<label class="form-label">Description</label>
+<textarea name="description" class="form-control" rows="4"></textarea>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Price (₹)</label>
+<input type="number" name="price" class="form-control">
+</div>
+
+<div class="mb-4">
+<label class="form-label">Artwork Image</label>
+<input type="file" name="image" class="form-control">
+</div>
+
+
+
+<div class="d-flex gap-3">
+<button class="btn btn-send">
+🚀 Send to Market
+</button>
+
+<a href="{% url 'artist_scrap_list' %}" class="btn btn-back">
+← Back
+</a>
+</div>
+
+</form>
+
+</div>
+</div>
+
+
+
+{% endblock %}

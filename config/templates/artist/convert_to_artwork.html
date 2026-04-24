@@ -1,0 +1,93 @@
+<!-- convert to artwok kaa page hey jaha artist form bhartaa hey -->
+
+{% extends "base.html" %}
+
+{% block title %}Convert Scrap{% endblock %}
+
+{% block content %}
+
+{% if payment_required %}
+
+<h3 class="mb-4">💳 Scrap Payment Required</h3>
+
+<div class="card shadow p-4 mb-4">
+    <h5>Total Scrap Amount: ₹ {{ amount }}</h5>
+    <p class="text-muted">You must complete payment before creating artwork.</p>
+
+    <button id="rzp-button" class="btn btn-primary">
+        Pay & Continue
+    </button>
+</div>
+
+<form id="payment-form" method="POST" action="{% url 'scrap_payment_success' %}">
+    {% csrf_token %}
+    <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+    <input type="hidden" name="razorpay_order_id" value="{{ razorpay_order_id }}">
+</form>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+var options = {
+    "key": "{{ razorpay_key }}",
+    "amount": "{{ amount|floatformat:2 }}",
+    "currency": "INR",
+    "order_id": "{{ razorpay_order_id }}",
+    "handler": function (response){
+        document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+        document.getElementById('payment-form').submit();
+    }
+};
+
+var rzp = new Razorpay(options);
+
+document.getElementById('rzp-button').onclick = function(e){
+    rzp.open();
+    e.preventDefault();
+}
+</script>
+
+{% else %}
+
+<h3 class="mb-4">🎨 Convert Scrap to Artwork</h3>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label>Artwork Title</label>
+        <input type="text" name="title" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label>Description</label>
+        <textarea name="description" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Set Artwork Price (₹)</label>
+        <input type="number" name="price" step="0.01" required class="form-control">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Upload Artwork Image</label>
+        <input type="file" name="artwork_image" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Net Quantity</label>
+
+        <input type="number"
+            name="quantity"
+            class="form-control"
+            min="1"
+            required>
+    </div>
+
+    <button class="btn btn-success">
+        Create Artwork
+    </button>
+
+</form>
+
+{% endif %}
+{% endblock %}

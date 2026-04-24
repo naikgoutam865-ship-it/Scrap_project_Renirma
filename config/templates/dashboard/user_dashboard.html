@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+    /* ===== Dashboard Styling ===== */
+    .dashboard-card {
+        border-radius: 18px;
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+        animation: fadeUp 0.8s ease forwards;
+        opacity: 0;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .dashboard-card h2 {
+        font-size: 2.6rem;
+        font-weight: 700;
+    }
+
+    .icon-circle {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        margin: 0 auto 10px;
+    }
+
+    .delay-1 {
+        animation-delay: 0.1s;
+    }
+
+    .delay-2 {
+        animation-delay: 0.3s;
+    }
+
+    .delay-3 {
+        animation-delay: 0.5s;
+    }
+
+    @keyframes fadeUp {
+        from {
+            transform: translateY(30px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* ===== Chart Card ===== */
+    .chart-card {
+        border-radius: 18px;
+        padding: 20px;
+        background: #fff;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        animation: fadeUp 0.9s ease forwards;
+    }
+
+    .bar {
+        height: 14px;
+        border-radius: 10px;
+        margin-bottom: 14px;
+        background: linear-gradient(90deg, #0d6efd, #6ea8fe);
+        animation: growBar 1.2s ease forwards;
+        width: 0;
+    }
+
+    .bar.green {
+        background: linear-gradient(90deg, #198754, #75c686);
+    }
+
+    .bar.orange {
+        background: linear-gradient(90deg, #fd7e14, #ffb266);
+    }
+
+    .btn-gradient {
+        background: linear-gradient(45deg, #6c63ff, #4caf50);
+        color: white;
+        border: none;
+        border-radius: 30px;
+    }
+
+    .btn-gradient:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+        transition: 0.3s;
+    }
+
+    @keyframes growBar {
+        from {
+            width: 0;
+        }
+
+        to {
+            width: var(--bar-width);
+        }
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h3>Welcome, {{ request.user.username }} 👋</h3>
+
+    <a href="{% url 'order_history' %}" class="btn btn-gradient px-4">
+        🧾 My History
+    </a>
+
+
+</div>
+
+<!-- ===== TOP CARDS ===== -->
+<div class="row">
+
+    <!-- TOTAL SCRAPS -->
+    <div class="col-md-4 mb-4">
+        <div class="card text-bg-primary dashboard-card delay-1 position-relative">
+
+            <!-- stretched link -->
+            <a href="/scrap/my/" class="stretched-link"></a>
+
+            <div class="card-body text-center">
+                <div class="icon-circle">🗑️</div>
+                <h5>{% trans "Total Scraps" %}</h5>
+                <h2>{{ total_scraps }}</h2>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- REQUESTS RECEIVED -->
+    <div class="col-md-4 mb-4">
+        <div class="card text-bg-success dashboard-card delay-2 position-relative">
+
+            <!-- stretched link -->
+            <a href="/scrap/my-requests/" class="stretched-link"></a>
+
+            <div class="card-body text-center">
+                <div class="icon-circle">📩</div>
+                <h5>{% trans "Requests Received" %}</h5>
+                <h2>{{ requests_received }}</h2>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="col-md-4 mb-4">
+        <div class="card text-bg-warning dashboard-card delay-3 position-relative">
+
+            <!-- stretched link -->
+            <a href="{% url 'order_history' %}" class="stretched-link"></a>
+
+            <div class="card-body text-center">
+                <div class="icon-circle">✅</div>
+                <h5>{% trans "Orders" %}</h5>
+                <h2>{{ orders_count }}</h2>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== CHART SECTION ===== -->
+<!-- ===== CHART SECTION ===== -->
+<div class="row mt-4">
+
+    <div class="col-md-6 mb-4">
+        <div class="chart-card">
+            <h5 class="mb-3 fw-bold">📊 Activity Overview</h5>
+
+            <p class="mb-1">Total Scraps</p>
+            <div class="bar" style="--bar-width: {{ scrap_percent }}%; width: {{ scrap_percent }}%; max-width:100%;">
+            </div>
+
+            <p class="mb-1">Requests Received</p>
+            <div class="bar green"
+                style="--bar-width: {{ request_percent }}%; width: {{ request_percent }}%; max-width:100%;"></div>
+
+            <p class="mb-1">Orders</p>
+            <div class="bar orange"
+                style="--bar-width: {{ order_percent }}%; width: {{ order_percent }}%; max-width:100%;"></div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="chart-card text-center">
+            <h5 class="mb-3 fw-bold">📈 Performance Summary</h5>
+            <p class="text-muted">
+                This visual summary helps you quickly understand
+                how active your account is based on scraps, requests,
+                and approved orders.
+            </p>
+
+            <div class="mt-4">
+                <span class="badge bg-primary me-2">Scraps</span>
+                <span class="badge bg-success me-2">Requests</span>
+                <span class="badge bg-warning text-dark">Orders</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ===== USER ROLE / RESPONSIBILITY (FANCY) ===== -->
+<style>
+    .role-card {
+        border-radius: 18px;
+        overflow: hidden;
+        animation: fadeUp 1s ease forwards;
+    }
+
+    .role-header {
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .role-header h4 {
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .role-body {
+        padding: 25px;
+        background: #fff;
+    }
+
+    .role-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 14px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    .role-item:hover {
+        background: #eef2ff;
+        transform: translateX(6px);
+    }
+
+    .role-icon {
+        font-size: 28px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0d6efd, #6ea8fe);
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .role-text h6 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .role-text p {
+        margin: 0;
+        font-size: 14px;
+        color: #555;
+    }
+</style>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card shadow role-card">
+
+            <div class="role-header">
+                <h4>👤 Your Role in ReNirma</h4>
+                <small><b>What you can do as a User (Seller)</small>
+            </div>
+
+            <div class="role-body">
+
+                <div class="role-item">
+                    <div class="role-icon">🗑️</div>
+                    <div class="role-text">
+                        <h6>Add Scraps</h6>
+                        <p>Upload scrap items with category, weight, price, and image.</p>
+                    </div>
+                </div>
+
+                <div class="role-item">
+                    <div class="role-icon">📩</div>
+                    <div class="role-text">
+                        <h6>Receive Requests</h6>
+                        <p>Dealers and artists can request your listed scraps.</p>
+                    </div>
+                </div>
+
+                <div class="role-item">
+                    <div class="role-icon">✅</div>
+                    <div class="role-text">
+                        <h6>Approve or Reject</h6>
+                        <p>You decide whether to approve or reject incoming requests.</p>
+                    </div>
+                </div>
+
+                <div class="role-item">
+                    <div class="role-icon">📦</div>
+                    <div class="role-text">
+                        <h6>Orders Management</h6>
+                        <p>Each approved request is counted as a confirmed order.</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    function goToMyScraps() {
+        window.location.href = "/scrap/my/";
+    }
+
+    function goToRequests() {
+        window.location.href = "/scrap/my-requests/";
+    }
+</script>
+{% endblock %}

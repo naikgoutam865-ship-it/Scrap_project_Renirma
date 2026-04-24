@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Sold Artworks{% endblock %}
+
+{% block content %}
+<h3 class="mb-4 text-center">🎨 Sold Artworks</h3>
+
+<div class="row">
+
+    {% for order in orders %}
+
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+
+            {% if order.artwork.image %}
+                <img src="{{ order.artwork.image.url }}"
+                     class="card-img-top"
+                     style="height:200px; object-fit:cover;">
+            {% endif %}
+
+            <div class="card-body">
+                <h5 class="card-title">
+                    {{ order.artwork.title }}
+                </h5>
+
+                <p class="mb-1">
+                    <strong>Buyer:</strong> {{ order.buyer.username }}
+                </p>
+
+                <p class="mb-1">
+                    <strong>Status:</strong> {{ order.status }}
+                </p>
+
+                <small class="text-muted">
+                    Sold on {{ order.ordered_at|date:"d M Y, H:i" }}
+                </small>
+            </div>
+
+        </div>
+    </div>
+
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                No artworks sold yet.
+            </div>
+        </div>
+    {% endfor %}
+
+</div>
+{% endblock %}

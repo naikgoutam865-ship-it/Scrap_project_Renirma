@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+body{
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+}
+
+.table-box{
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.4);
+}
+
+table{
+    width:100%;
+    border-collapse: collapse;
+}
+
+th, td{
+    padding:12px;
+    text-align:center;
+}
+
+th{
+    background:#0d6efd;
+}
+
+tr:nth-child(even){
+    background: rgba(255,255,255,0.05);
+}
+
+/* 🔥 SEARCH BOX STYLE */
+.search-box{
+    display:flex;
+    gap:10px;
+}
+
+.search-box input{
+    padding:8px 12px;
+    border-radius:8px;
+    border:none;
+    outline:none;
+}
+
+.search-box button{
+    background:#0d6efd;
+    color:white;
+    border:none;
+    padding:8px 14px;
+    border-radius:8px;
+    cursor:pointer;
+}
+</style>
+
+<div class="container mt-5">
+
+
+<!-- 🔥 HEADER + SEARCH -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h2>🏦 All Customers Bank Details</h2>
+
+    <form method="get" class="search-box">
+        <input type="text" name="q" value="{{ query }}"
+               placeholder="Search by username...">
+
+        <button type="submit">🔍</button>
+    </form>
+
+</div>
+
+<div class="table-box">
+
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Account Holder</th>
+                <th>Account Number</th>
+                <th>IFSC</th>
+                <th>UPI</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for b in banks %}
+            <tr>
+                <td>{{ b.user.username }}</td>
+                <td>{{ b.account_holder_name }}</td>
+                <td>{{ b.bank_account_number }}</td>
+                <td>{{ b.ifsc_code }}</td>
+                <td>{{ b.upi_id|default:"-" }}</td>
+                <td>{{ b.created_at }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No bank details found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+
+</div>
+
+{% endblock %}

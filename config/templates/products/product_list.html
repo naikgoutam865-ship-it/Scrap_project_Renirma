@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Products{% endblock %}
+
+{% block content %}
+
+<h3 class="mb-4">Eco-Friendly Products</h3>
+
+<div class="row">
+
+    <!-- ===============================
+         OLD STATIC CARD (UNCHANGED)
+         =============================== -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow">
+            <img src="https://via.placeholder.com/300" class="card-img-top">
+            <div class="card-body text-center">
+                <h5>Recycled Lamp</h5>
+                <p>₹799</p>
+                <a href="#" class="btn btn-primary btn-sm">View</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===============================
+         DYNAMIC PRODUCTS FROM DATABASE
+         =============================== -->
+    {% for product in products %}
+
+    <div class="col-md-4 mb-4">
+        <div class="card shadow">
+
+            {% if product.image %}
+                <img src="{{ product.image.url }}" class="card-img-top">
+            {% else %}
+                <img src="https://via.placeholder.com/300" class="card-img-top">
+            {% endif %}
+
+            <div class="card-body text-center">
+                <h5>{{ product.name }}</h5>
+                <p>₹ {{ product.price }}</p>
+                <p>Available: {{ product.quantity }}</p>
+
+                <a href="#" class="btn btn-primary btn-sm mb-2">View</a>
+
+                {% if user.is_authenticated and user.user_type == "CUSTOMER" %}
+
+                <form method="POST"
+                      action="{% url 'buy_product' product.id %}">
+                    {% csrf_token %}
+
+                    <input
+                        type="number"
+                        name="quantity"
+                        min="1"
+                        max="{{ product.quantity }}"
+                        value="1"
+                        class="form-control mb-2"
+                        required
+                    >
+
+                    <button type="submit"
+                            class="btn btn-success btn-sm w-100">
+                        Buy Scrap
+                    </button>
+                </form>
+
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    {% empty %}
+        <p>No products available.</p>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

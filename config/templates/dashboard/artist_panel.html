@@ -1,0 +1,160 @@
+<!-- YE OH PAGE HEY JAHA AVAILABLE SCRAP KAA BUTTON HEY THIK HEY  -->
+
+{% extends "base.html" %}
+
+{% block title %}Artist Panel{% endblock %}
+
+{% block content %}
+
+<style>
+
+.artist-container {
+    max-width: 900px;
+    margin: 60px auto;
+}
+
+/* Glass Premium Card */
+.artist-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(18px);
+    border-radius: 28px;
+    padding: 50px;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15);
+    animation: fadeUp 0.9s ease forwards;
+    opacity: 0;
+}
+
+/* Title Gradient */
+.panel-title {
+    font-size: 34px;
+    font-weight: 900;
+    background: linear-gradient(90deg, #7c3aed, #06b6d4);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+.panel-sub {
+    color: #6c757d;
+    margin-bottom: 40px;
+}
+
+/* Button Wrapper */
+.action-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* Base Button */
+.action-btn {
+    position: relative;
+    padding: 20px;
+    border-radius: 20px;
+    font-size: 17px;
+    font-weight: 700;
+    border: none;
+    transition: all 0.35s ease;
+    text-align: center;
+    overflow: hidden;
+}
+
+/* 🔥 EXPLORE BUTTON (Main Highlight) */
+.premium-btn {
+    background: linear-gradient(135deg, #7c3aed, #06b6d4);
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+}
+
+.premium-btn:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.35);
+}
+
+/* Glow Effect */
+.premium-btn::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -100%;
+    left: -100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 60%);
+    transform: rotate(25deg);
+    transition: 0.6s;
+}
+
+.premium-btn:hover::before {
+    top: -40%;
+    left: -40%;
+}
+
+/* Disabled Buttons */
+.disabled-btn {
+    background: #f1f3f5;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+.disabled-btn:hover {
+    transform: scale(1.01);
+}
+
+/* Badge */
+.badge-tag {
+    background: #ffe8cc;
+    color: #d9480f;
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 25px;
+    margin-left: 10px;
+}
+
+/* Animation */
+@keyframes fadeUp {
+    from {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+</style>
+
+<div class="artist-container">
+
+    <div class="artist-card">
+
+        <h2 class="panel-title mb-3">
+            🎨 Artist Control Center
+        </h2>
+
+        <p class="panel-sub">
+            Manage your creative journey and transform scrap into premium artwork.
+        </p>
+
+        <div class="action-wrapper">
+
+            <!-- 🔥 PREMIUM EXPLORE BUTTON -->
+            <a href="{% url 'artist_scrap_list' %}"
+               class="action-btn premium-btn">
+               🚀 Explore Available Scraps
+            </a>
+
+            <a href="{% url 'sell_artwork' %}" class="action-btn premium-btn">
+                🛒 Sell Artwork
+            </a>
+            
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,434 @@
+<!-- YE THEY ARTWORK MARKET PLACE KAA PAGE JAHA ARTWORK SELL HOTA HEY   -->
+
+{% extends "base.html" %}
+{% block title %}Artwork Marketplace{% endblock %}
+
+{% block content %}
+
+<style>
+   body {
+        background: linear-gradient(135deg,#78e3fe,#243B55);
+    }
+
+    /* ===== Card ===== */
+    .market-card {
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.85);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+        transition: all 0.4s ease;
+        animation: fadeUp 0.7s ease forwards;
+        opacity: 0;
+    }
+
+    .market-card:hover {
+        transform: translateY(-10px) scale(1.03);
+        box-shadow: 0 28px 55px rgba(0,0,0,0.2);
+    }
+
+    /* Glow Border */
+    .market-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 20px;
+        padding: 2px;
+        background: linear-gradient(135deg, #0d6efd, #20c997);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: -1;
+    }
+
+    .market-card:hover::before {
+        opacity: 1;
+    }
+
+    /* ===== Image ===== */
+    .market-img {
+        height: 180px;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    /* Hover Overlay */
+    .card-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: all 0.4s ease;
+    }
+
+    .market-card:hover .card-overlay {
+        opacity: 1;
+    }
+
+    /* ===== Price Badge ===== */
+    .price-badge {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        background: linear-gradient(135deg, #198754, #20c997);
+        color: #fff;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+        z-index: 5;
+    }
+
+    /* ===== Featured Ribbon ===== */
+    .ribbon {
+        position: absolute;
+        top: 12px;
+        left: -30px;
+        background: linear-gradient(135deg, #ff6a00, #ffb347);
+        color: #fff;
+        padding: 5px 40px;
+        transform: rotate(-45deg);
+        font-size: 11px;
+        font-weight: 700;
+        z-index: 6;
+    }
+
+    /* ===== Text ===== */
+    .card-body h6 {
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .artist-name {
+        font-size: 13px;
+        color: #6c757d;
+        margin-bottom: 12px;
+    }
+
+    /* ===== Buy Button ===== */
+    .buy-btn {
+        border-radius: 30px;
+        padding: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .buy-btn::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            120deg,
+            transparent,
+            rgba(255,255,255,0.4),
+            transparent
+        );
+        transition: all 0.6s ease;
+    }
+
+    .buy-btn:hover::after {
+        left: 100%;
+    }
+
+    /* ===== Search Bar ===== */
+    .market-search {
+        background: rgba(255,255,255,0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 18px;
+        padding: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+
+    .market-search input,
+    .market-search select {
+        border-radius: 30px;
+        padding: 10px 16px;
+    }
+
+    .market-search button {
+        border-radius: 30px;
+        padding: 10px 22px;
+        font-weight: 600;
+    }
+
+
+    /* ===== Animation ===== */
+    @keyframes fadeUp {
+        from {
+            transform: translateY(40px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .delete-modal {
+        position: fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        background: rgba(0,0,0,0.5);
+        display:none;
+        align-items:center;
+        justify-content:center;
+        z-index:9999;
+    }
+
+    .delete-box {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        width: 320px;
+        text-align:center;
+        animation: pop 0.3s ease;
+    }
+
+    @keyframes pop {
+        from {transform: scale(0.7); opacity:0;}
+        to {transform: scale(1); opacity:1;}
+    }
+</style>
+
+<h3 class="fw-bold text-center mb-4">🎨 Explore Unique Artworks</h3>
+
+{% if artist_filter or min_price or max_price or min_rating %}
+<div class="alert alert-info text-center">
+    🔎 Filters Applied
+</div>
+{% endif %}
+
+<form method="get" class="market-search">
+    <div class="row g-2 align-items-center">
+
+        <!-- Search -->
+        <div class="col-md-6">
+            <input type="text"
+                   name="q"
+                   value="{{ query }}"
+                   class="form-control"
+                   placeholder="🔍 Search artwork by name...">
+        </div>
+
+        <!-- Sort -->
+        <div class="col-md-4">
+            <select name="sort" class="form-select">
+                <option value="">🎲 Random</option>
+                <option value="low" {% if sort == "low" %}selected{% endif %}>
+                    💰 Price: Low to High
+                </option>
+                <option value="high" {% if sort == "high" %}selected{% endif %}>
+                    💰 Price: High to Low
+                </option>
+                <option value="top" {% if sort == "top" %}selected{% endif %}>
+                    🔥 Top Rated
+                </option>
+
+            </select>
+        </div>
+
+        <!-- Artist Filter -->
+        <div class="col-md-3">
+            <input type="text"
+                name="artist"
+                value="{{ artist_filter }}"
+                class="form-control"
+                placeholder="🎨 Artist name">
+        </div>
+
+        <!-- Min Price -->
+        <div class="col-md-2">
+            <input type="number"
+                name="min_price"
+                value="{{ min_price }}"
+                class="form-control"
+                placeholder="Min ₹">
+        </div>
+
+        <!-- Max Price -->
+        <div class="col-md-2">
+            <input type="number"
+                name="max_price"
+                value="{{ max_price }}"
+                class="form-control"
+                placeholder="Max ₹">
+        </div>
+
+        <select name="min_rating" class="form-select">
+            <option value="">⭐ Min Rating</option>
+            <option value="4" {% if min_rating == "4" %}selected{% endif %}>4+ Stars</option>
+            <option value="3" {% if min_rating == "3" %}selected{% endif %}>3+ Stars</option>
+            <option value="2" {% if min_rating == "2" %}selected{% endif %}>2+ Stars</option>
+        </select>
+
+        <!-- Button -->
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-primary">
+                Search
+            </button>
+        </div>
+
+    </div>
+</form>
+
+{% if recommended %}
+<h4 class="mt-4 mb-3">✨ Recommended For You</h4>
+
+<div class="row mb-4">
+    {% for art in recommended %}
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            {% if art.image %}
+            <img src="{{ art.image.url }}" class="card-img-top" style="height:180px; object-fit:cover;">
+            {% endif %}
+            <div class="card-body">
+                <h6>{{ art.title }}</h6>
+                <p class="text-muted">₹ {{ art.price }}</p>
+                <a href="{% url 'artwork_detail' art.id %}" class="btn btn-outline-primary btn-sm">
+                    View
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="row">
+
+    {% for art in artworks %}
+    <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+    
+        <div class="card market-card">
+
+            <!-- Featured -->
+            <div class="ribbon">FEATURED</div>
+
+            <!-- Price -->
+            <div class="price-badge">
+                ₹ {{ art.price }}
+            </div>
+
+            <!-- Image + Overlay -->
+            <div class="position-relative">
+                {% if art.image %}
+                    <img src="{{ art.image.url }}" class="market-img">
+                {% else %}
+                    <img src="https://via.placeholder.com/300x200?text=No+Image"
+                         class="market-img">
+                {% endif %}
+
+                <div class="card-overlay">
+                    <span class="fw-bold fs-5">View & Buy</span>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="card-body text-center p-3">
+
+                <h6>{{ art.title|truncatechars:30 }}</h6>
+
+                <p class="text-muted small">
+                    {{ art.description|default:"No description available"|truncatechars:90 }}
+                </p>
+                
+                <div class="artist-name">
+                    by {{ art.artist.username }}
+                </div>
+
+                <form method="POST" action="{% url 'toggle_wishlist' art.id %}">
+                    {% csrf_token %}
+                    <button type="submit" style="border:none; background:none; font-size:20px;">
+                        ❤️
+                    </button>
+                </form>
+
+                <p class="text-success fw-bold">
+                    📦 Available: {{ art.quantity|default:"0" }}
+                </p>
+                <a href="{% url 'buy_product' art.id %}"
+                   class="btn btn-primary buy-btn w-100">
+                    🛒 Buy Artwork
+                </a>
+
+                {% if art.artist == user %}
+                <button class="btn btn-danger btn-sm w-100 mt-2 delete-art-btn"
+                        data-id="{{ art.id }}">
+                    🗑️ Delete Artwork
+                </button>
+                {% endif %} 
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-warning text-center">
+            No artworks found for your search or filters.
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+<!-- DELETE MODAL -->
+<div id="deleteModal" class="delete-modal">
+    <div class="delete-box">
+        <h5>⚠️ Confirm Delete</h5>
+        <p>Delete this artwork?</p>
+
+        <div class="d-flex gap-2">
+            <button id="cancelDelete" class="btn btn-secondary w-50">Cancel</button>
+            <form id="deleteForm" method="POST" class="w-50">
+                {% csrf_token %}
+                <button class="btn btn-danger w-100">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+
+const modal = document.getElementById("deleteModal");
+const deleteForm = document.getElementById("deleteForm");
+
+document.querySelectorAll(".delete-art-btn").forEach(btn => {
+
+    btn.addEventListener("click", function(){
+
+        const id = this.dataset.id;
+
+        // ✅ FIXED URL
+        deleteForm.action = `/artist/delete-artwork/${id}/`;
+
+        modal.style.display = "flex";
+    });
+
+});
+
+document.getElementById("cancelDelete").onclick = function(){
+    modal.style.display = "none";
+};
+
+</script>
+
+
+
+{% endblock %}

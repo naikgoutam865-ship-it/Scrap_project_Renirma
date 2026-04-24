@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* ===== GLOBAL PREMIUM STYLES ===== */
+
+.hero-pro {
+    border-radius: 28px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+}
+
+.hero-overlay {
+    backdrop-filter: blur(2px);
+}
+
+.glass-card {
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.4);
+    transition: all .35s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,.18);
+}
+
+.btn-premium {
+    border-radius: 50px;
+    padding: 12px 28px;
+    font-weight: 600;
+    letter-spacing: .4px;
+    transition: all .3s ease;
+}
+
+.btn-premium:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 30px rgba(0,0,0,.35);
+}
+
+.section-title {
+    font-weight: 700;
+    letter-spacing: .5px;
+}
+
+.fancy-divider {
+    height: 3px;
+    width: 80px;
+    background: linear-gradient(90deg,#ff6a00,#ffd000);
+    border-radius: 30px;
+    margin: 12px auto 0;
+}
+
+.vision-card {
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.35);
+}
+
+</style>
+
+
+<!-- 🔥 HERO SECTION -->
+<div class="hero-pro mb-5"
+     style="
+        background:
+        linear-gradient(135deg, rgba(15,32,39,0.9), rgba(32,58,67,0.9), rgba(44,83,100,0.9)),
+        url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6');
+        background-size: cover;
+        background-position: center;
+     ">
+
+    <!-- Glow Effects -->
+    <div style="
+        position:absolute;
+        width:400px;
+        height:400px;
+        background: radial-gradient(circle, rgba(0,255,150,0.3), transparent);
+        top:-100px;
+        left:-100px;
+        filter: blur(80px);
+    "></div>
+
+    <div style="
+        position:absolute;
+        width:300px;
+        height:300px;
+        background: radial-gradient(circle, rgba(0,150,255,0.3), transparent);
+        bottom:-80px;
+        right:-80px;
+        filter: blur(80px);
+    "></div>
+
+    <div class="text-center py-5 hero-overlay text-white position-relative">
+
+        <h1 class="display-3 fw-bold mb-3">
+            ♻ ReNirma
+        </h1>
+
+        <p class="fs-4 mb-4 text-light">
+            Transform Waste into Wealth • Buy • Sell • Recycle Smartly
+        </p>
+
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+
+            {% if not user.is_authenticated %}
+                <a href="{% url 'login' %}" class="btn btn-light btn-lg btn-premium">
+                    Login
+                </a>
+
+                <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg btn-premium">
+                    Register
+                </a>
+            {% else %}
+                <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg btn-premium">
+                    Go to Dashboard
+                </a>
+            {% endif %}
+
+            <a href="{% url 'artwork_marketplace' %}"
+               class="btn btn-success btn-lg btn-premium"
+               style="background: linear-gradient(135deg,#00c853,#009688); border:none;">
+                🖼 Explore Marketplace
+            </a>
+
+        </div>
+
+        <div class="mt-4" style="opacity:0.7; font-size:14px;">
+            🌱 Sustainable • 🤖 AI Powered • 💰 Earn from Scrap
+        </div>
+
+    </div>
+</div>
+
+
+<!-- 🔹 HOW IT WORKS -->
+<div class="text-center mb-5">
+    <h2 class="section-title">How It Works</h2>
+    <div class="fancy-divider"></div>
+    <p class="text-muted mt-2">A simple and eco-friendly process</p>
+</div>
+
+<div class="row text-center mb-5">
+
+    <div class="col-md-4 mb-4">
+        <div class="glass-card p-4 h-100">
+            <h1>👤</h1>
+            <h4 class="mt-3 fw-semibold">Seller</h4>
+            <p class="text-muted">
+                Sell your scrap, manage requests and earn money.
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="glass-card p-4 h-100">
+            <h1>🎨</h1>
+            <h4 class="mt-3 fw-semibold">Artist</h4>
+            <p class="text-muted">
+                Transform scrap into creative artworks.
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="glass-card p-4 h-100">
+            <h1>🏪</h1>
+            <h4 class="mt-3 fw-semibold">Dealer</h4>
+            <p class="text-muted">
+                Request and purchase scrap easily.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- 🔹 ABOUT -->
+<div class="row align-items-center mb-5">
+
+    <div class="col-md-6 mb-4">
+        <h2 class="fw-bold mb-3">About ReNirma</h2>
+
+        <p class="text-muted fs-5">
+            <b>Where Waste Finds its Way Home.</b>
+            Renirma connects users, dealers, and artists into one ecosystem.
+        </p>
+    </div>
+
+    <div class="col-md-6 text-center">
+        <div class="glass-card p-5">
+            <h1 style="font-size:60px;">🌱</h1>
+            <p class="text-muted mb-0">
+                Turning waste into opportunity through technology.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- 🔹 VISION -->
+<div class="vision-card mb-5"
+     style="
+        background:
+        linear-gradient(rgba(0,0,0,.7), rgba(0,0,0,.7)),
+        url('https://images.unsplash.com/photo-1469474968028-56623f02e42e');
+        background-size: cover;
+     ">
+
+    <div class="text-center text-white p-5">
+        <h2 class="fw-bold mb-3">Our Vision</h2>
+        <p class="fs-5">
+            To build a sustainable ecosystem where scrap becomes valuable.
+        </p>
+    </div>
+
+</div>
+
+
+<!-- 🔹 CTA -->
+<div class="text-center p-5 text-white"
+     style="
+        background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+        border-radius: 28px;
+     ">
+
+    <h3 class="mb-3">Ready to get started?</h3>
+
+    {% if not user.is_authenticated %}
+        <a href="{% url 'register' %}" class="btn btn-light btn-lg btn-premium">
+            Create Account
+        </a>
+    {% endif %}
+</div>
+
+{% endblock %}

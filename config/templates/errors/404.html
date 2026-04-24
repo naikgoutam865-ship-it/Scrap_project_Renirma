@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .error-container {
+        min-height: 80vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #ff6a00, #ee0979);
+        color: white;
+        text-align: center;
+        padding: 40px;
+    }
+
+    .error-box {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        padding: 50px;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        max-width: 500px;
+    }
+
+    .error-box h1 {
+        font-size: 90px;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    .error-box p {
+        font-size: 18px;
+        margin-bottom: 25px;
+        opacity: 0.9;
+    }
+
+    .btn-home {
+        background: white;
+        color: #ee0979;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+    .btn-home:hover {
+        background: #f0f0f0;
+        transform: translateY(-3px);
+    }
+</style>
+
+<div class="error-container">
+    <div class="error-box">
+        <h1>404</h1>
+        <p>The page you are looking for doesn’t exist.</p>
+        <a href="/" class="btn-home">Return to Homepage</a>
+    </div>
+</div>
+
+{% endblock %}

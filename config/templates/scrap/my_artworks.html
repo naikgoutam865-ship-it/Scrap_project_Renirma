@@ -1,0 +1,146 @@
+<!-- artist kaa my artwork bala page   -->
+
+{% extends "base.html" %}
+
+{% block title %}My Artworks{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* ===== PAGE ANIMATION ===== */
+.container{
+    animation:fadeUp .6s ease;
+}
+@keyframes fadeUp{
+    from{opacity:0; transform:translateY(25px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+/* ===== TITLE ===== */
+.art-title{
+    font-weight:700;
+    letter-spacing:.4px;
+}
+
+/* ===== TABLE CARD WRAPPER ===== */
+.table-card{
+    background:linear-gradient(135deg,#ffffff,#f7faff);
+    border-radius:22px;
+    padding:25px;
+    box-shadow:0 25px 60px rgba(0,0,0,.12);
+}
+
+/* ===== TABLE ===== */
+.premium-table{
+    border-radius:14px;
+    overflow:hidden;
+}
+
+.premium-table thead{
+    background:linear-gradient(135deg,#0ea5e9,#2563eb);
+    color:white;
+}
+
+.premium-table th{
+    border:none;
+    padding:14px;
+    font-weight:600;
+}
+
+.premium-table td{
+    padding:14px;
+    vertical-align:middle;
+    border-color:#e5e7eb;
+}
+
+/* ===== ROW HOVER ===== */
+.premium-table tbody tr{
+    transition:.3s;
+}
+.premium-table tbody tr:hover{
+    background:#f1f5ff;
+    transform:scale(1.005);
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-box{
+    padding:30px;
+    text-align:center;
+    color:#6b7280;
+    font-weight:500;
+}
+
+/* ===== BACK BUTTON ===== */
+.back-btn{
+    margin-top:20px;
+    background:linear-gradient(135deg,#6b7280,#374151);
+    border:none;
+    padding:10px 18px;
+    border-radius:12px;
+    color:white;
+    font-weight:600;
+    transition:.3s;
+}
+
+.back-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 25px rgba(0,0,0,.2);
+}
+
+</style>
+
+
+<h3 class="mb-4 art-title">
+    🎨 My Artworks
+</h3>
+
+<div class="table-card">
+    <div class="table-responsive">
+
+    <table class="table premium-table">
+
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Scrap</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for art in artworks %}
+            <tr>
+                <td class="fw-semibold">{{ art.title }}</td>
+                <td>{{ art.scrap.category|title }}</td>
+                <td class="text-muted">{{ art.description }}</td>
+                <td class="fw-bold text-success">
+                    ₹ {{ art.price }}
+                </td>
+                <td class="text-muted">
+                    {{ art.created_at|date:"d M Y" }}
+                </td>
+            </tr>
+
+            {% empty %}
+            <tr>
+                <td colspan="5" class="empty-box">
+                    🎨 No artworks created yet
+                </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+    </div>
+</div>
+
+<a href="{% url 'artist_approved_scraps' %}" class="btn back-btn">
+    ← Back
+</a>
+
+{% endblock %}

@@ -1,0 +1,254 @@
+<!-- YE HEY REGISTER KARNE KAA PAGE  -->
+
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+
+<style>
+/* ===== BACKGROUND ===== */
+.register-scene {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 20% 20%, #e0f2fe, transparent 40%),
+        radial-gradient(circle at 80% 30%, #ede9fe, transparent 45%),
+        radial-gradient(circle at 50% 80%, #dcfce7, transparent 45%),
+        linear-gradient(135deg, #f8fafc, #eef2ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1400px;
+    overflow: hidden;
+}
+
+/* ===== CARD ===== */
+.register-card {
+    width: 100%;
+    max-width: 520px;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 55px 45px;
+    box-shadow: 0 40px 90px rgba(0,0,0,0.25);
+    transform-style: preserve-3d;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    position: relative;
+}
+
+/* Light layer */
+.register-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    background: linear-gradient(
+        120deg,
+        rgba(255,255,255,0.6),
+        transparent 40%
+    );
+    pointer-events: none;
+}
+
+/* ===== TEXT ===== */
+.register-title {
+    text-align: center;
+    font-weight: 900;
+    font-size: 28px;
+    margin-bottom: 6px;
+    transform: translateZ(40px);
+}
+
+.register-sub {
+    text-align: center;
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 35px;
+    transform: translateZ(30px);
+}
+
+/* ===== FORM ===== */
+.register-card input,
+.register-card select {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #cbd5f5;
+    padding: 12px 6px;
+    font-size: 15px;
+    margin-bottom: 22px;
+    transition: border-color 0.25s ease;
+}
+
+.register-card input:focus,
+.register-card select:focus {
+    outline: none;
+    border-bottom-color: #6366f1;
+}
+
+.register-card form p {
+    margin-bottom: 0;
+    transform: translateZ(25px);
+}
+
+/* ===== BUTTON ===== */
+.register-btn {
+    width: 100%;
+    padding: 15px;
+    margin-top: 10px;
+    border-radius: 14px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, #6366f1, #22c55e);
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transform: translateZ(50px);
+}
+
+.register-btn:hover {
+    box-shadow: 0 20px 45px rgba(99,102,241,0.45);
+}
+
+.password-box {
+    position: relative;
+}
+
+.password-box input {
+    width: 100%;
+    padding-right: 42px;
+}
+
+.eye-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+    user-select: none;
+    opacity: 0.6;
+}
+
+.eye-btn:hover {
+    opacity: 1;
+}
+
+.terms-box{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;   /* 👈 left align */
+    gap:8px;
+    margin-top:10px;
+}
+
+.terms-box input[type="checkbox"]{
+    width:16px;
+    height:16px;
+    margin:0;
+}
+
+.terms-box label{
+    margin:0;
+}
+
+
+/* ===== FOOTER ===== */
+.register-note {
+    margin-top: 22px;
+    text-align: center;
+    font-size: 13px;
+    color: #64748b;
+    transform: translateZ(20px);
+}
+</style>
+
+<div class="register-scene">
+    <div class="register-card" id="registerCard">
+
+        <h2 class="register-title">Create Your Account</h2>
+        <div class="register-sub">
+            Begin your journey from scrap to sustainable value
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <div class="password-box">
+                <input type="password" name="password" id="passwordField" placeholder="Password" required>
+                <span class="eye-btn" onclick="togglePassword()">👁️</span>
+            </div>
+
+            <select name="role" required>
+                <option value="">Select Role</option>
+                <option value="user">User (Seller)</option>
+                <option value="dealer">Dealer</option>
+                <option value="artist">Artist</option>
+            </select>
+
+            <label>Select Language</label>
+            <select name="language" class="form-control">
+                <option value="en">English</option>
+                <option value="hi">Hindi</option>
+                <option value="or">Odia</option>
+                <option value="bn">Bengali</option>
+                <option value="ta">Tamil</option>
+                <option value="te">Telugu</option>
+            </select>
+
+           <div class="terms-box">
+                <input type="checkbox" name="terms" required>
+                <label>
+                    I agree to the
+                    <a href="{% url 'terms' %}">Terms & Conditions</a>
+                </label>
+            </div>
+
+            <button type="submit" class="register-btn">
+                Register Now
+            </button>
+        </form>
+
+        <div class="register-note">
+            Secure • Professional • Eco-friendly ♻️
+        </div>
+
+    </div>
+</div>
+
+<script>
+/* ===== REAL 3D MOUSE TILT ===== */
+const card = document.getElementById("registerCard");
+
+card.addEventListener("mousemove", (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = -(y - centerY) / 18;
+    const rotateY = (x - centerX) / 18;
+
+    card.style.transform = `
+        rotateX(${rotateX}deg)
+        rotateY(${rotateY}deg)
+        translateZ(30px)
+    `;
+});
+
+card.addEventListener("mouseleave", () => {
+    card.style.transform = "rotateX(0deg) rotateY(0deg) translateZ(0)";
+});
+</script>
+
+<script>
+function togglePassword() {
+    const pass = document.getElementById("passwordField");
+    pass.type = pass.type === "password" ? "text" : "password";
+}
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+
+<h3 class="mb-4">My Orders</h3>
+
+<div class="table-responsive">
+
+<table class="table table-bordered table-striped shadow">
+    <thead class="table-dark">
+        <tr>
+            <th>Order ID</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Total Price</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td>#101</td>
+            <td>Recycled Lamp</td>
+            <td>1</td>
+            <td>₹799</td>
+            <td>
+                <span class="badge bg-warning">Pending</span>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+
+{% endblock %}

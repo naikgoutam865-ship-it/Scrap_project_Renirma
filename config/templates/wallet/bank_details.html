@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+.bank-wrapper{
+min-height:75vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:40px 20px;
+}
+
+/* card */
+
+.bank-card{
+max-width:520px;
+width:100%;
+background:rgba(255,255,255,0.12);
+backdrop-filter:blur(16px);
+border-radius:22px;
+padding:35px;
+box-shadow:0 20px 50px rgba(0,0,0,0.25);
+animation:fadeUp .7s ease;
+}
+
+/* animation */
+
+@keyframes fadeUp{
+from{
+opacity:0;
+transform:translateY(40px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+/* title */
+
+.bank-title{
+text-align:center;
+font-weight:800;
+margin-bottom:25px;
+}
+
+/* inputs */
+
+.bank-card input{
+height:45px;
+border-radius:10px;
+border:1px solid #ddd;
+padding:0 12px;
+}
+
+/* labels */
+
+.bank-card label{
+font-weight:600;
+margin-bottom:5px;
+}
+
+/* button */
+
+.bank-btn{
+margin-top:10px;
+border:none;
+border-radius:30px;
+font-weight:700;
+padding:10px;
+background:linear-gradient(135deg,#667eea,#764ba2);
+color:white;
+transition:.3s;
+}
+
+.bank-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 10px 25px rgba(0,0,0,0.3);
+}
+
+</style>
+
+<div class="bank-wrapper">
+
+<div class="bank-card">
+
+<h3 class="bank-title">🏦 Bank Details</h3>
+
+<form method="POST">
+
+{% csrf_token %}
+
+<div class="mb-3">
+
+<label>Account Holder Name</label>
+
+<input
+type="text"
+name="account_holder_name"
+class="form-control"
+value="{{ bank.account_holder_name }}"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label>Bank Account Number</label>
+
+<input
+type="text"
+name="bank_account_number"
+class="form-control"
+value="{{ bank.bank_account_number }}"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label>IFSC Code</label>
+
+<input
+type="text"
+name="ifsc_code"
+class="form-control"
+value="{{ bank.ifsc_code }}"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label>UPI ID</label>
+
+<input
+type="text"
+name="upi_id"
+class="form-control"
+value="{{ bank.upi_id }}">
+
+</div>
+
+<div class="d-grid">
+
+<button class="bank-btn">
+💾 Save Bank Details
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

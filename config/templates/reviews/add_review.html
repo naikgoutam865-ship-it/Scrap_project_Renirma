@@ -1,0 +1,142 @@
+<!-- YE FORM BALA PAGE HEY JAHA reviews ADD KARNE KO HAM FORM BHARTE HEIN  -->
+
+{% extends "base.html" %}
+{% block title %}Add Review{% endblock %}
+
+{% block content %}
+
+<style>
+
+    /* 🌌 PREMIUM BACKGROUND */
+    body{
+        background: radial-gradient(circle at top,#111827,#020617);
+        color:white;
+    }
+
+    /* ⭐ TITLE */
+    .page-title{
+        text-align:center;
+        font-weight:700;
+        margin-bottom:30px;
+        letter-spacing:1px;
+        text-shadow:0 0 12px rgba(0,255,200,0.35);
+    }
+
+    /* 💎 GLASS FORM CARD */
+    .review-card{
+        background:rgba(255,255,255,0.05);
+        backdrop-filter: blur(18px);
+        border-radius:20px;
+        padding:35px;
+        border:1px solid rgba(255,255,255,0.12);
+        box-shadow:0 15px 45px rgba(0,0,0,0.5);
+        transition:.35s;
+    }
+
+    .review-card:hover{
+        box-shadow:0 25px 60px rgba(0,0,0,0.7);
+        border:1px solid rgba(0,255,200,0.3);
+    }
+
+    /* 🧾 LABEL */
+    .review-card label{
+        font-size:14px;
+        opacity:.75;
+        margin-bottom:6px;
+    }
+
+    /* 🧊 INPUT STYLE */
+    .review-card input,
+    .review-card select,
+    .review-card textarea{
+        background:rgba(255,255,255,0.06);
+        border:1px solid rgba(255,255,255,0.15);
+        color:white;
+        border-radius:12px;
+        padding:12px 14px;
+        transition:.25s;
+    }
+
+    .review-card input:focus,
+    .review-card select:focus,
+    .review-card textarea:focus{
+        border:1px solid #06b6d4;
+        box-shadow:0 0 10px rgba(0,255,255,0.5);
+        outline:none;
+        background:rgba(255,255,255,0.08);
+    }
+
+    /* 💬 TEXTAREA HEIGHT */
+    textarea{
+        min-height:110px;
+        resize:none;
+    }
+
+    /* 🚀 BUTTON */
+    .submit-btn{
+        background: linear-gradient(135deg,#06b6d4,#3b82f6);
+        border:none;
+        padding:14px;
+        border-radius:50px;
+        font-weight:600;
+        letter-spacing:.5px;
+        box-shadow:0 0 25px rgba(0,255,255,0.35);
+        transition:.3s;
+    }
+
+    .submit-btn:hover{
+        transform:translateY(-2px);
+        box-shadow:0 0 45px rgba(0,255,255,0.6);
+    }
+
+    /* ✍️ USER TYPING TEXT WHITE */
+    .review-card input,
+    .review-card textarea,
+    .review-card select{
+        color: white !important;
+    }
+
+    /* ✍️ PLACEHOLDER COLOR */
+    .review-card input::placeholder,
+    .review-card textarea::placeholder{
+        color: rgba(255,255,255,0.6);
+    }
+
+
+</style>
+
+
+<h3 class="page-title">⭐ Add Review</h3>
+
+<div class="col-md-6 mx-auto">
+<div class="review-card">
+
+<form method="post">
+{% csrf_token %}
+
+<label class="form-label">Artwork / Scrap Name</label>
+<input type="text" name="scrap_type" class="form-control mb-3" required>
+
+<label class="form-label">Artist Name</label>
+<input type="text" name="artist_name" class="form-control mb-3" required>
+
+<label class="form-label">Quality Rating</label>
+<select name="rating" class="form-control mb-3">
+<option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+<option value="4">⭐⭐⭐⭐ Good</option>
+<option value="3">⭐⭐⭐ Average</option>
+<option value="2">⭐⭐ Poor</option>
+<option value="1">⭐ Bad</option>
+</select>
+
+<label class="form-label">Comment</label>
+<textarea name="comment" class="form-control mb-3"></textarea>
+
+<button class="btn submit-btn w-100">Submit Review</button>
+
+</form>
+
+</div>
+</div>
+
+{% endblock %}
