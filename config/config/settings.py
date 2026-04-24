@@ -23,12 +23,16 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY")
+import os
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-ALLOWED_HOSTS = ["*", ".ngrok-free.app"]
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+DEBUG = os.environ.get("DEBUG") == "True"
+
+RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET")
+
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -173,8 +177,6 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 
-RAZORPAY_KEY_ID = env("RAZORPAY_KEY_ID")
-RAZORPAY_KEY_SECRET = env("RAZORPAY_KEY_SECRET")
 
 
 # ===============================
