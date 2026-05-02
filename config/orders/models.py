@@ -33,11 +33,7 @@ class Order(models.Model):
         default='PENDING'
     )
 
-    # 🔐 Razorpay Payment Tracking Fields (NEW - SAFE ADDITION)
-    razorpay_order_id = models.CharField(max_length=255, blank=True, null=True)
-    razorpay_payment_id = models.CharField(max_length=255, blank=True, null=True)
-    razorpay_signature = models.CharField(max_length=255, blank=True, null=True)
-
+    
     ordered_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -81,8 +77,7 @@ class ArtworkOrder(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     
     payment_id = models.CharField(max_length=200, blank=True, null=True)
-    razorpay_order_id = models.CharField(max_length=200, blank=True, null=True)
-
+   
     payment_status = models.CharField(
         max_length=20,
         default="pending"

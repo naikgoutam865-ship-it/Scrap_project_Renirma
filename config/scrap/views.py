@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from .ai_utils import recommend_price
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,13 +13,11 @@ from .models import Review,Scrap, ScrapRequest, ScrapPayment, WalletTransaction,
 from artist.models import Artwork
 from .recommendation import get_recommended_artworks
 
-import razorpay
+
 from decimal import Decimal
 import requests
 
-client = razorpay.Client(
-    auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
-)
+
 
 # ===============================
 # SELLER — ADD SCRAP
@@ -105,11 +104,17 @@ def request_scrap(request, scrap_id):
     if scrap.seller == request.user:
         return redirect("scrap_list")
 
+    # ✅ ensure available_weight initialized
+    if scrap.available_weight == 0:
+        scrap.available_weight = scrap.weight_kg
+        scrap.save()
+
     if request.method == "POST":
 
         req_weight = float(request.POST.get("requested_weight"))
 
-        if req_weight > scrap.weight_kg:
+        # ❌ VALIDATION FIX (IMPORTANT)
+        if req_weight > scrap.available_weight:
             messages.error(request, "Requested weight exceeds available scrap!")
             return render(request, "scrap/request_scrap.html", {"scrap": scrap})
 
@@ -122,7 +127,6 @@ def request_scrap(request, scrap_id):
 
         messages.success(request, "Request sent successfully!")
         return redirect("my_requests")
-
 
     return render(
         request,
@@ -168,23 +172,36 @@ def update_request_status(request, request_id, status):
     req.status = status
     req.save()
 
-    # 👉 Weight reduce ONLY after approval
     if status == "approved":
 
         scrap = req.scrap
-        # safety initialization (first time scrap request)
+
+        # ❌ already approved block
+        if req.status == "approved":
+            messages.warning(request, "Already approved!")
+            return redirect("my_scrap_requests")
+
+        # safety initialization
         if scrap.available_weight == 0:
             scrap.available_weight = scrap.weight_kg
-            
-        scrap.available_weight = max(
-            0,
-            scrap.available_weight - req.requested_weight
-        )
 
-        if scrap.available_weight == 0:
+        # ❌ weight exceed check (IMPORTANT)
+        if req.requested_weight > scrap.available_weight:
+            messages.error(request, "Not enough scrap available!")
+            return redirect("my_scrap_requests")
+
+        # ✅ reduce weight
+        scrap.available_weight -= req.requested_weight
+
+        if scrap.available_weight <= 0:
+            scrap.available_weight = 0
             scrap.is_available = False
 
         scrap.save()
+
+        # ✅ status update yaha kar
+        req.status = "approved"
+        req.save()
 
         # ===============================
         # 📧 EMAIL TO ARTIST ON APPROVAL
@@ -269,25 +286,6 @@ def artist_scrap_list(request):
 # =====================================================
 @artist_required
 @login_required
-def artist_approved_scraps(request):
-
-    approved_requests = ScrapRequest.objects.filter(
-        requested_by=request.user,
-        status="approved"
-    ).select_related("scrap", "scrap__seller")
-
-    return render(
-        request,
-        "artist/approved_scraps.html",
-        {"requests": approved_requests}
-    )
-
-
-# =====================================================
-# SCRAP PAYMENT
-# =====================================================
-@artist_required
-@login_required
 def scrap_payment(request, request_id):
 
     approved_request = get_object_or_404(
@@ -303,125 +301,41 @@ def scrap_payment(request, request_id):
     scrap = approved_request.scrap
     amount = Decimal(approved_request.requested_weight) * Decimal(scrap.price_per_kg)
 
-    # ✅ Razorpay ke liye amount paise me convert
-    amount_paise = int(amount * 100)
-
-    # ✅ Debug print correct object se
-    print("PRICE:", scrap.price_per_kg)
-    print("WEIGHT:", scrap.weight_kg)
-    print("AMOUNT PAISE:", amount_paise)
-
-    if amount_paise <= 0:
-        messages.error(request, "Invalid payment amount.")
-        return redirect("approved_scraps")
-
-    razorpay_order = client.order.create({
-        "amount": amount_paise,
-        "currency": "INR",
-        "payment_capture": 1
-    })
-
-    ScrapPayment.objects.create(
-        scrap_request=approved_request,
-        artist=request.user,
-        amount=amount,
-        razorpay_order_id=razorpay_order["id"],
-        status="created"
-    )
-
-    return render(
-        request,  
-        "artist/scrap_payment.html",
-        {
-            "approved_request": approved_request,
-            "amount": amount,
-            "razorpay_order_id": razorpay_order["id"],
-            "razorpay_key": settings.RAZORPAY_KEY_ID
-        }
-    )
-
-from decimal import Decimal
-from .models import Wallet, WalletTransaction
-
-@csrf_exempt
-@artist_required
-@login_required
-def scrap_payment_success(request):
-
     if request.method == "POST":
 
-        razorpay_payment_id = request.POST.get("razorpay_payment_id")
-        razorpay_order_id = request.POST.get("razorpay_order_id")
-        razorpay_signature = request.POST.get("razorpay_signature")
+        # ✅ mark paid directly
+        approved_request.is_paid = True
+        approved_request.pickup_status = "pending"
+        approved_request.save()
 
-        try:
-            client.utility.verify_payment_signature({
-                "razorpay_order_id": razorpay_order_id,
-                "razorpay_payment_id": razorpay_payment_id,
-                "razorpay_signature": razorpay_signature
-            })
-        except:
-            messages.error(request, "Payment verification failed!")
-            return redirect("artist_dashboard")
-
-        payment = get_object_or_404(
-            ScrapPayment,
-            razorpay_order_id=razorpay_order_id
-        )
-
-        if payment.status == "paid":
-            messages.warning(request, "Payment already processed.")
-            return redirect("convert_to_artwork", request_id=payment.scrap_request.id)
-
-        # ✅ mark payment paid
-        payment.razorpay_payment_id = razorpay_payment_id
-        payment.razorpay_signature = razorpay_signature
-
-        payment.status = "paid"
-        payment.save()
-
-        # ✅ mark scrap request paid
-        scrap_request = payment.scrap_request
-        scrap_request.is_paid = True
-        scrap_request.save()
-
-        scrap_request.pickup_status = "pending"
-        scrap_request.save()
-        
-        # ====================================
-        # CREDIT MONEY TO SCRAP SELLER (USER)
-        # ====================================
-
-        from decimal import Decimal
-        from scrap.models import Wallet
-
-        scrap = scrap_request.scrap
+        # 💰 CREDIT SELLER WALLET
         seller = scrap.seller
-
-        amount = payment.amount
 
         commission = amount * Decimal("0.05")
         seller_amount = amount - commission
 
-        wallet, created = Wallet.objects.get_or_create(user=seller)
-
+        wallet, _ = Wallet.objects.get_or_create(user=seller)
         wallet.balance += seller_amount
         wallet.save()
 
-        # ledger entry
         WalletTransaction.objects.create(
             user=seller,
             amount=seller_amount,
             transaction_type="credit",
             description=f"Scrap sold: {scrap.category}"
         )
-        
-        messages.success(request, "Scrap payment successful!")
 
-        return redirect("pickup_details", request_id=scrap_request.id)
-        # 👉 Artwork convert page pe bhejo
-        # return redirect("convert_to_artwork", request_id=scrap_request.id)
+        messages.success(request, "Payment successful!")
+        return redirect("pickup_details", request_id=request_id)
 
+    return render(
+        request,
+        "artist/scrap_payment.html",
+        {
+            "approved_request": approved_request,
+            "amount": amount,
+        }
+    )
 
 # ===============================
 # MY ARTWORKS
@@ -552,13 +466,22 @@ def artist_request_scrap(request, scrap_id):
 
 @login_required
 def approved_scraps(request):
-    """
-    URL compatibility function.
-    Old urls.py calls approved_scraps
-    Internally redirected to artist_approved_scraps
-    """
-    return artist_approved_scraps(request)
 
+    approved_requests = ScrapRequest.objects.filter(
+        requested_by=request.user,
+        status="approved"
+    ).select_related("scrap")
+
+    print("CURRENT USER:", request.user)
+    print("APPROVED DATA:", approved_requests)
+
+    return render(
+        request,
+        "artist/approved_scraps.html",
+        {
+            "approved_requests": approved_requests
+        }
+    )
 
 def is_scrap_converted(scrap):
     return Artwork.objects.filter(scrap=scrap).exists()
@@ -956,12 +879,16 @@ def dealer_history(request):
         {"purchases": purchases}
     )
 
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from decimal import Decimal
+from scrap.models import ScrapRequest, Wallet
+
+
 @login_required
 def dealer_scrap_payment(request, request_id):
-
-    client = razorpay.Client(
-        auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
-    )
 
     approved_request = get_object_or_404(
         ScrapRequest,
@@ -970,27 +897,49 @@ def dealer_scrap_payment(request, request_id):
         status="approved"
     )
 
+    # already paid
     if approved_request.is_paid:
         return redirect("dealer_history")
 
     scrap = approved_request.scrap
-
     amount = Decimal(approved_request.requested_weight) * Decimal(scrap.price_per_kg)
-    amount_paise = int(amount * 100)
 
-    razorpay_order = client.order.create({
-        "amount": amount_paise,
-        "currency": "INR",
-        "payment_capture": 1
-    })
+    if request.method == "POST":
 
-    ScrapPayment.objects.create(
-        scrap_request=approved_request,
-        artist=request.user,
-        amount=amount,
-        razorpay_order_id=razorpay_order["id"],
-        status="created"
-    )
+        # 🔥 IMPORTANT FIX (ye add kiya)
+        request_id_post = request.POST.get("request_id")
+
+        if not request_id_post:
+            messages.error(request, "Invalid request ID")
+            return redirect("dealer_history")
+
+        approved_request = get_object_or_404(
+            ScrapRequest,
+            id=request_id_post,
+            requested_by=request.user,
+            status="approved"
+        )
+
+        # prevent double payment
+        if approved_request.is_paid:
+            return redirect("dealer_history")
+
+        approved_request.is_paid = True
+        approved_request.save()
+
+        # 💰 CREDIT SELLER
+        seller = approved_request.scrap.seller
+
+        commission = amount * Decimal("0.05")
+        seller_amount = amount - commission
+
+        wallet, _ = Wallet.objects.get_or_create(user=seller)
+        wallet.balance += seller_amount
+        wallet.save()
+
+        messages.success(request, "Payment successful!")
+
+        return redirect("dealer_history")
 
     return render(
         request,
@@ -998,69 +947,65 @@ def dealer_scrap_payment(request, request_id):
         {
             "approved_request": approved_request,
             "amount": amount,
-            "amount_paise": amount_paise,
-            "razorpay_order_id": razorpay_order["id"],
-            "razorpay_key": settings.RAZORPAY_KEY_ID
         }
     )
+
+from decimal import Decimal
+from scrap.models import Wallet, WalletTransaction
 
 @csrf_exempt
 @login_required
 def dealer_scrap_payment_success(request):
 
-    if request.method == "POST":
+    request_id = request.POST.get("request_id")
 
-        razorpay_payment_id = request.POST.get("razorpay_payment_id")
-        razorpay_order_id = request.POST.get("razorpay_order_id")
-        razorpay_signature = request.POST.get("razorpay_signature")
+    if not request_id:
+        return HttpResponse("ERROR: request_id missing")
 
-        try:
-            client.utility.verify_payment_signature({
-                "razorpay_order_id": razorpay_order_id,
-                "razorpay_payment_id": razorpay_payment_id,
-                "razorpay_signature": razorpay_signature
-            })
-        except:
-            messages.error(request, "Payment verification failed!")
-            return redirect("sanctioned_scraps")
+    scrap_request = get_object_or_404(
+        ScrapRequest,
+        id=request_id,
+        requested_by=request.user
+    )
 
-        payment = get_object_or_404(
-            ScrapPayment,
-            razorpay_order_id=razorpay_order_id
-        )
+    # ✅ already paid check
+    if scrap_request.is_paid:
+        return redirect("dealer_history")
 
-        payment.razorpay_payment_id = razorpay_payment_id
-        payment.razorpay_signature = razorpay_signature
+    scrap = scrap_request.scrap
 
-        # prevent double processing
-        if payment.status != "paid":
+    amount = Decimal(scrap_request.requested_weight) * Decimal(scrap.price_per_kg)
 
-            payment.status = "paid"
-            payment.save()
+    # ===============================
+    # ✅ MARK PAID
+    # ===============================
+    scrap_request.is_paid = True
+    scrap_request.save()
 
-            scrap_request = payment.scrap_request
-            scrap_request.is_paid = True
-            scrap_request.save()
+    # ===============================
+    # 💰 WALLET CREDIT (IMPORTANT)
+    # ===============================
+    seller = scrap.seller
 
-            from decimal import Decimal
-            from scrap.models import Wallet
+    commission = amount * Decimal("0.05")
+    seller_amount = amount - commission
 
-            scrap = scrap_request.scrap
-            seller = scrap.seller
+    wallet, _ = Wallet.objects.get_or_create(user=seller)
 
-            amount = payment.amount
+    wallet.balance += seller_amount
+    wallet.save()
 
-            commission = amount * Decimal("0.05")
-            seller_amount = amount - commission
+    # optional but BEST
+    WalletTransaction.objects.create(
+        user=seller,
+        amount=seller_amount,
+        transaction_type="credit",
+        description=f"Scrap sold ({scrap.category})"
+    )
 
-            wallet, created = Wallet.objects.get_or_create(user=seller)
+    messages.success(request, "Payment successful!")
 
-            wallet.balance += seller_amount
-            wallet.save()
-
-        messages.success(request, "Payment successful!")
-
-        return redirect("pickup_details", request_id=scrap_request.id)
+    return redirect("dealer_history")
 
 from .models import Wallet
 
@@ -1402,3 +1347,300 @@ def admin_bank_details(request):
             "query": query
         }
     )
+@login_required
+def scrap_payment_success(request):
+
+    request_id = request.GET.get("request_id")
+
+    if not request_id:
+        return redirect("approved_scraps")
+
+    scrap_request = get_object_or_404(
+        ScrapRequest,
+        id=request_id,
+        requested_by=request.user
+    )
+
+    if scrap_request.is_paid:
+        return redirect("convert_to_artwork", request_id=request_id)
+
+    scrap = scrap_request.scrap
+
+    amount = Decimal(scrap_request.requested_weight) * Decimal(scrap.price_per_kg)
+
+    # ✅ MARK PAID
+    scrap_request.is_paid = True
+    scrap_request.save()
+
+    # 💰 WALLET CREDIT
+    seller = scrap.seller
+
+    commission = amount * Decimal("0.05")
+    seller_amount = amount - commission
+
+    wallet, _ = Wallet.objects.get_or_create(user=seller)
+    wallet.balance += seller_amount
+    wallet.save()
+
+    WalletTransaction.objects.create(
+        user=seller,
+        amount=seller_amount,
+        transaction_type="credit",
+        description=f"Artist paid for scrap ({scrap.category})"
+    )
+
+    messages.success(request, "Payment successful!")
+
+    return redirect("pickup_details", request_id=request_id)
+
+import stripe
+from django.conf import settings
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import ScrapRequest
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+@login_required
+def create_checkout_session(request, request_id):
+
+    scrap_request = get_object_or_404(ScrapRequest, id=request_id)
+
+    amount = int(scrap_request.scrap.price_per_kg * scrap_request.requested_weight * 100)
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[{
+            'price_data': {
+                'currency': 'inr',
+                'product_data': {
+                    'name': 'Scrap Payment',
+                },
+                'unit_amount': amount,
+            },
+            'quantity': 1,
+        }],
+        mode='payment',
+        success_url=request.build_absolute_uri(f"/scrap/payment-success/{request_id}/"),
+        cancel_url=request.build_absolute_uri("/scrap/"),
+    )
+
+    return redirect(session.url)
+
+@login_required
+def stripe_payment_success(request, request_id):
+
+    scrap_request = get_object_or_404(
+        ScrapRequest,
+        id=request_id,
+        requested_by=request.user
+    )
+
+    # already paid check
+    if not scrap_request.is_paid:
+        scrap_request.is_paid = True
+        scrap_request.save()
+
+    return redirect("pickup_details", request_id=request_id)
+
+
+from decimal import Decimal
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.conf import settings
+import stripe
+
+from scrap.models import ScrapRequest, Wallet, WalletTransaction
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+# ===============================
+# ARTIST STRIPE PAYMENT
+# ===============================
+@login_required
+def artist_stripe_pay(request, request_id):
+    print("🔥 HIT artist_stripe_pay")
+    
+    approved_request = get_object_or_404(
+        ScrapRequest,
+        id=request_id,
+        requested_by=request.user,
+        status="approved"
+    )
+
+    scrap = approved_request.scrap
+
+    amount = Decimal(approved_request.requested_weight) * Decimal(scrap.price_per_kg)
+
+    # 🔥 FIX: minimum Stripe amount
+    amount_paise = int(amount * 100)
+    if amount_paise < 50:
+        amount_paise = 50
+
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'inr',
+                    'product_data': {
+                        'name': scrap.category,
+                    },
+                    'unit_amount': amount_paise,
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+
+            success_url=f"http://127.0.0.1:8000/scrap/artist/payment-success/?request_id={approved_request.id}",
+            cancel_url="http://127.0.0.1:8000/scrap/artist/approved-scraps/",
+        )
+
+        return redirect(session.url)
+
+    except Exception as e:
+        print("Stripe Error:", e)
+        messages.error(request, "Payment failed. Try again.")
+        return redirect("approved_scraps")
+
+@login_required
+def artist_payment_success(request):
+
+    request_id = request.GET.get("request_id")
+
+    if not request_id:
+        messages.error(request, "Invalid request")
+        return redirect("approved_scraps")
+
+    approved_request = get_object_or_404(
+        ScrapRequest,
+        id=request_id,
+        requested_by=request.user,
+        status="approved"
+    )
+
+    # 🔎 Already paid check
+    if approved_request.is_paid:
+        messages.warning(request, "Already paid")
+        return redirect("approved_scraps")
+
+    scrap = approved_request.scrap
+
+    amount = Decimal(approved_request.requested_weight) * Decimal(scrap.price_per_kg)
+
+    # ===============================
+    # 💰 CREDIT SELLER WALLET
+    # ===============================
+    seller = scrap.seller
+
+    commission = amount * Decimal("0.05")
+    seller_amount = amount - commission
+
+    wallet, _ = Wallet.objects.get_or_create(user=seller)
+    wallet.balance += seller_amount
+    wallet.save()
+
+    WalletTransaction.objects.create(
+        user=seller,
+        amount=seller_amount,
+        transaction_type="credit",
+        description=f"Scrap sold: {scrap.category}"
+    )
+
+    # ===============================
+    # UPDATE REQUEST
+    # ===============================
+    approved_request.is_paid = True
+    approved_request.save()
+
+    messages.success(request, "🎉 Payment successful!")
+
+    return redirect("pickup_details", request_id=request_id)
+
+@login_required
+def dealer_payment_success(request):
+
+    request_id = request.GET.get("request_id")
+
+    if not request_id:
+        return redirect("sanctioned_scraps")
+
+    scrap_request = get_object_or_404(
+        ScrapRequest,
+        id=request_id,
+        requested_by=request.user
+    )
+
+    if scrap_request.is_paid:
+        return redirect("dealer_history")
+
+    scrap = scrap_request.scrap
+
+    amount = Decimal(scrap_request.requested_weight) * Decimal(scrap.price_per_kg)
+
+    # ✅ mark paid
+    scrap_request.is_paid = True
+    scrap_request.save()
+
+    # 💰 wallet update
+    seller = scrap.seller
+
+    commission = amount * Decimal("0.05")
+    seller_amount = amount - commission
+
+    wallet, _ = Wallet.objects.get_or_create(user=seller)
+    wallet.balance += seller_amount
+    wallet.save()
+
+    WalletTransaction.objects.create(
+        user=seller,
+        amount=seller_amount,
+        transaction_type="credit",
+        description=f"Dealer paid for scrap ({scrap.category})"
+    )
+
+    messages.success(request, "Payment successful!")
+
+    return redirect("dealer_history")
+
+
+@login_required
+def dealer_stripe_pay(request, request_id):
+
+    approved_request = get_object_or_404(
+        ScrapRequest,
+        id=request_id,
+        requested_by=request.user,
+        status="approved"
+    )
+
+    scrap = approved_request.scrap
+
+    amount = Decimal(approved_request.requested_weight) * Decimal(scrap.price_per_kg)
+
+    amount_paise = int(amount * 100)
+    if amount_paise < 50:
+        amount_paise = 50
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[{
+            'price_data': {
+                'currency': 'inr',
+                'product_data': {
+                    'name': scrap.category,
+                },
+                'unit_amount': amount_paise,
+            },
+            'quantity': 1,
+        }],
+        mode='payment',
+
+        success_url=f"http://127.0.0.1:8000/scrap/dealer/payment-success/?request_id={approved_request.id}",
+        cancel_url="http://127.0.0.1:8000/scrap/sanctioned-scraps/",
+    )
+
+    return redirect(session.url)

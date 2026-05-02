@@ -23,14 +23,13 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-import os
-
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = os.environ.get("DEBUG") == "True"
+# DEBUG = os.environ.get("DEBUG") == "True"
+DEBUG = True
 
-RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID")
-RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET")
+STRIPE_PUBLIC_KEY = "pk_test_51TPzCqLdksptLLlq1RwBNg2dpFHjLSGmbPdUiePazpCgVpRdqrQgzdFkvg5L6SD5LGgsp1cy3u7Qgbk9PmX9NJLi00ziWQ72B1"
+STRIPE_SECRET_KEY = "sk_test_51TPzCqLdksptLLlqQ1fgkxN31Up6s4mP2GlUAzdHGL2mVZfGBLO6TM2duKJWH226kW3YxfdWktBLkp0MnkDQVCa500OS0ihjFN"
 
 ALLOWED_HOSTS = ["*"]
 
@@ -58,6 +57,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -210,8 +210,11 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
 
-SITE_URL = "https://9827-103-92-47-27.ngrok-free.app"
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+SITE_URL = "https://c1f8-2409-4062-4e16-c8b3-2da6-e686-4bc0-858c.ngrok-free.app"
+
+GROQ_API_KEY = "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"
 GROQ_API_KEY = env("GROQ_API_KEY", default=None)
 
 # ===============================
@@ -276,4 +279,4 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB max upload
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880
 
 LOCALE_PATHS = [BASE_DIR / 'locale']
-DEFAULT_DOMAIN = "9827-103-92-47-27.ngrok-free.app"
+DEFAULT_DOMAIN = "c1f8-2409-4062-4e16-c8b3-2da6-e686-4bc0-858c.ngrok-free.app"

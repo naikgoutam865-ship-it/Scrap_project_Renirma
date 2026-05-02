@@ -112,16 +112,18 @@ Keep replies short and clear.
         ] + history
 
         try:
+            client = Groq(api_key=settings.GROQ_API_KEY)
+
             completion = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model="llama-3.3-70b-versatile",   # ✅ FIXED
                 messages=messages_payload
             )
 
             reply = completion.choices[0].message.content
 
         except Exception as e:
-            print("AI ERROR:", e)
-            reply = "Assistant temporarily unavailable. Try again."
+            
+            reply = f"currently not available. Please try after some time.:{str(e)}"   # 👈 TEMP DEBUG (important)
 
         return JsonResponse({"reply": reply})
 

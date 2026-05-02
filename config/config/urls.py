@@ -58,7 +58,7 @@ path(
         template_name="accounts/password_reset.html",
         email_template_name="accounts/password_reset_email.html",
         success_url="/accounts/password-reset/done/",
-        extra_email_context={"domain":"9827-103-92-47-27.ngrok-free.app"}
+        extra_email_context={"domain":"c1f8-2409-4062-4e16-c8b3-2da6-e686-4bc0-858c.ngrok-free.app"}
     ),
     name="password_reset",
 ),

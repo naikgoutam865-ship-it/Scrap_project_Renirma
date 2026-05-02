@@ -1,5 +1,3 @@
-<!-- scrap kaa payment page jaha pay hota hey  -->
-
 {% extends "base.html" %}
 {% block content %}
 
@@ -17,55 +15,14 @@
             ₹ {{ amount }}
         </h4>
 
-        <button id="pay-btn" class="btn btn-success btn-lg px-5">
-            Pay Now
-        </button>
+        <!-- ✅ FIXED BUTTON -->
+        <a href="{% url 'artist_stripe_pay' approved_request.id %}" 
+           class="btn btn-success btn-lg px-5">
+            Pay with Stripe
+        </a>
 
     </div>
 
 </div>
-
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-<script>
-
-document.getElementById("pay-btn").onclick = function(){
-
-    var options = {
-        "key": "{{ razorpay_key }}",
-        "amount": "{{ amount|floatformat:2 }}" * 100,
-        "currency": "INR",
-        "name": "ReNirma",
-        "description": "Scrap Purchase",
-        "order_id": "{{ razorpay_order_id }}",
-
-        "handler": function (response){
-
-            var form = document.createElement("form");
-            form.method = "POST";
-            form.action = "{% url 'scrap_payment_success' %}";
-
-            var csrf = document.createElement("input");
-            csrf.name = "csrfmiddlewaretoken";
-            csrf.value = "{{ csrf_token }}";
-            form.appendChild(csrf);
-
-            ["razorpay_payment_id","razorpay_order_id","razorpay_signature"]
-            .forEach(function(field){
-                var input = document.createElement("input");
-                input.name = field;
-                input.value = response[field];
-                form.appendChild(input);
-            });
-
-            document.body.appendChild(form);
-            form.submit();
-        }
-    };
-
-    new Razorpay(options).open();
-}
-
-</script>
 
 {% endblock %}

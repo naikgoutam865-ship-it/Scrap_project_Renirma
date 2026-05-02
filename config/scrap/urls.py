@@ -1,10 +1,12 @@
 from django.urls import path
 from . import views
 
-urlpatterns = [
+urlpatterns =[
+    
     path('add/', views.add_scrap, name='add_scrap'),
     path('my/', views.my_scraps, name='my_scraps'),
     path('list/', views.scrap_list, name='scrap_list'),
+
     path('request/<int:scrap_id>/', views.request_scrap, name='request_scrap'),
 
     path(
@@ -12,6 +14,7 @@ urlpatterns = [
         views.update_request_status,
         name="update_request_status"
     ),
+
     path("my-requests/", views.my_scrap_requests, name="my_scrap_requests"),
     path("my-sent-requests/", views.my_requests, name="my_requests"),
 
@@ -27,62 +30,82 @@ urlpatterns = [
         name="artist_request_scrap"
     ),
 
+    # ✅ ONLY ONE approved scraps route
     path(
-    "artist/approved-scraps/",
-    views.approved_scraps,
-    name="approved_scraps"
+        "artist/approved-scraps/",
+        views.approved_scraps,
+        name="approved_scraps"
+    ),
+
+    # ✅ ONLY ONE convert route
+    path(
+        "artist/convert/<int:request_id>/",
+        views.convert_to_artwork,
+        name="convert_to_artwork"
     ),
 
     path(
-    "artist/convert/<int:request_id>/",
-    views.convert_to_artwork,
-    name="convert_to_artwork"
+        "artist/my-artworks/",
+        views.my_artworks,
+        name="my_artworks"
     ),
 
     path(
-    "artist/approved-scraps/",
-    views.artist_approved_scraps,
-    name="artist_approved_scraps"
+        "artworks/",
+        views.artwork_marketplace,
+        name="artwork_marketplace"
     ),
 
     path(
-    "artist/my-artworks/",
-    views.my_artworks,
-    name="my_artworks"
+        "artist/scrap-payment/<int:request_id>/",
+        views.scrap_payment,
+        name="scrap_payment"
     ),
 
     path(
-    "artist/convert/<int:request_id>/",
-    views.convert_to_artwork,
-    name="convert_to_art"
+        "artist/scrap-payment-success/",
+        views.scrap_payment_success,
+        name="scrap_payment_success"
     ),
 
     path(
-    "artworks/",
-    views.artwork_marketplace,
-    name="artwork_marketplace"
+        "artwork/<int:artwork_id>/",
+        views.artwork_detail,
+        name="artwork_detail"
     ),
 
-    path("artist/scrap-payment/<int:request_id>/", views.scrap_payment, name="scrap_payment"),
-    path("artist/scrap-payment-success/", views.scrap_payment_success, name="scrap_payment_success"),
-    path("artwork/<int:artwork_id>/", views.artwork_detail, name="artwork_detail"),
-    path("wishlist/<int:artwork_id>/", views.toggle_wishlist, name="toggle_wishlist"),
+    path(
+        "wishlist/<int:artwork_id>/",
+        views.toggle_wishlist,
+        name="toggle_wishlist"
+    ),
+
     path("my-wishlist/", views.my_wishlist, name="my_wishlist"),
-    path("admin/finance/", views.admin_finance_dashboard, name="admin_finance_dashboard"),
-    path("admin/settle/<int:order_id>/",
+
+    path(
+        "admin/finance/",
+        views.admin_finance_dashboard,
+        name="admin_finance_dashboard"
+    ),
+
+    path(
+        "admin/settle/<int:order_id>/",
         views.mark_order_settled,
-        name="mark_order_settled"),
+        name="mark_order_settled"
+    ),
 
     path("reviews/", views.all_reviews, name="all_reviews"),
     path("reviews/add/", views.add_review, name="add_review"),
-    
+
     path("notify-me/", views.create_scrap_alert, name="create_scrap_alert"),
     path("ai-price/", views.ai_price, name="ai_price"),
+
     path(
         "sanctioned-scraps/",
         views.sanctioned_scraps,
         name="sanctioned_scraps"
     ),
+
     path(
         "dealer-history/",
         views.dealer_history,
@@ -95,28 +118,12 @@ urlpatterns = [
         name="dealer_scrap_payment"
     ),
 
-    path(
-        "dealer/payment-success/",
-        views.dealer_scrap_payment_success,
-        name="dealer_scrap_payment_success"
-    ),
-    path(
-        "wallet/",
-        views.wallet_view,
-        name="wallet"
-    ),
+    
 
-    path(
-        "withdraw/",
-        views.withdraw_request,
-        name="withdraw_request"
-    ),
+    path("wallet/", views.wallet_view, name="wallet"),
 
-    path(
-        "bank-details/",
-        views.bank_details,
-        name="bank_details"
-    ),
+    path("withdraw/", views.withdraw_request, name="withdraw_request"),
+    path("bank-details/", views.bank_details, name="bank_details"),
 
     path(
         "admin/withdraw-requests/",
@@ -147,6 +154,7 @@ urlpatterns = [
         views.mark_scrap_picked,
         name="pickup_complete",
     ),
+
     path(
         "pickup-details/<int:request_id>/",
         views.add_pickup_details,
@@ -159,11 +167,15 @@ urlpatterns = [
         name="pickup_history",
     ),
 
-    path("select-category/",views.select_category, name="select_category"),
+    path("select-category/", views.select_category, name="select_category"),
 
     path("wishlist/", views.wishlist_page, name="wishlist"),
-    
-    path("delete-scrap/<int:scrap_id>/", views.delete_scrap, name="delete_scrap"),
+
+    path(
+        "delete-scrap/<int:scrap_id>/",
+        views.delete_scrap,
+        name="delete_scrap"
+    ),
 
     path(
         "admin/bank-details/",
@@ -171,4 +183,28 @@ urlpatterns = [
         name="admin_bank_details"
     ),
 
+    path(
+        "payment-success/<int:request_id>/",
+        views.stripe_payment_success,
+        name="stripe_success"
+    ),
+    path(
+        "dealer/payment-success/",
+        views.dealer_scrap_payment_success,
+        name="dealer_scrap_payment_success"
+    ),
+
+    # ARTIST STRIPE
+    path("artist/stripe-pay/<int:request_id>/", views.artist_stripe_pay, name="artist_stripe_pay"),
+    path("artist/payment-success/", views.artist_payment_success, name="artist_payment_success"),
+
+    # DEALER STRIPE (ONLY IF VIEW EXISTS)
+    # warna comment kar
+    # path("dealer/stripe-pay/<int:request_id>/", views.dealer_stripe_pay, name="dealer_stripe_pay"),
+    # path("dealer/payment-success/", views.dealer_payment_success, name="dealer_payment_success"),
+
+    path("dealer/stripe-pay/<int:request_id>/", views.dealer_stripe_pay, name="dealer_stripe_pay"),
+    path("dealer/payment-success/", views.dealer_payment_success, name="dealer_payment_success"),
 ]
+
+    

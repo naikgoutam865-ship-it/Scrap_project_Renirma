@@ -90,73 +90,22 @@
 
 <div class="royal-payment">
 
-<h3>Dealer Scrap Payment</h3>
+<h2>Dealer Scrap Payment</h2>
 
-<div class="payment-card">
+    <p><strong>Scrap:</strong> {{ approved_request.scrap.category }}</p>
+    <p><strong>Weight:</strong> {{ approved_request.requested_weight }} kg</p>
+    <p><strong>Total Amount:</strong> ₹ {{ amount }}</p>
 
-<p><strong>Scrap:</strong> <span>{{ approved_request.scrap.category }}</span></p>
-
-<p><strong>Weight:</strong> <span>{{ approved_request.requested_weight }} kg</span></p>
-
-<p><strong>Total Amount:</strong>  
-<span class="amount">₹ {{ amount }}</span></p>
-
-<button id="pay-btn" class="pay-btn">
-Pay Now
-</button>
-
-</div>
-
-<form id="payment-form" method="POST" action="{% url 'dealer_scrap_payment_success' %}">
-{% csrf_token %}
-<input type="hidden" name="razorpay_payment_id">
-<input type="hidden" name="razorpay_order_id">
-<input type="hidden" name="razorpay_signature">
-</form>
+    <!-- ✅ FINAL WORKING FORM -->
+    <form method="POST" action="{% url 'dealer_stripe_pay' approved_request.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success btn-lg px-5">
+            Pay with Stripe
+        </button>
+    </form>
 
 </div>
 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    console.log("Page Loaded");
-
-    var options = {
-        "key": "{{ razorpay_key }}",
-        "amount": "{{ amount_paise }}",
-        "currency": "INR",
-        "name": "ReNirma",
-        "description": "Scrap Payment",
-        "order_id": "{{ razorpay_order_id }}",
-
-        "handler": function (response){
-            console.log("Payment Success");
-
-            document.querySelector("input[name='razorpay_payment_id']").value = response.razorpay_payment_id;
-            document.querySelector("input[name='razorpay_order_id']").value = response.razorpay_order_id;
-            document.querySelector("input[name='razorpay_signature']").value = response.razorpay_signature;
-
-            document.getElementById("payment-form").submit();
-        }
-    };
-
-    var rzp = new Razorpay(options);
-
-    var btn = document.getElementById('pay-btn');
-
-    if(btn){
-        btn.onclick = function(e){
-            console.log("Button Clicked");
-            rzp.open();
-            e.preventDefault();
-        }
-    } else {
-        console.log("Button NOT found ❌");
-    }
-
-});
-</script>
+</div>
 
 {% endblock %}
