@@ -28,12 +28,12 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # DEBUG = os.environ.get("DEBUG") == "True"
 DEBUG = True
 
+
+import os
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 STRIPE_PUBLIC_KEY = "pk_test_51TPzCqLdksptLLlq1RwBNg2dpFHjLSGmbPdUiePazpCgVpRdqrQgzdFkvg5L6SD5LGgsp1cy3u7Qgbk9PmX9NJLi00ziWQ72B1"
-STRIPE_SECRET_KEY = "sk_test_51TPzCqLdksptLLlqQ1fgkxN31Up6s4mP2GlUAzdHGL2mVZfGBLO6TM2duKJWH226kW3YxfdWktBLkp0MnkDQVCa500OS0ihjFN"
 
 ALLOWED_HOSTS = ["*"]
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -42,17 +42,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
+    # ✅ correct
     'accounts',
-    'scrap.apps.ScrapConfig',
-    'products',
-    'notifications',
-    'rest_framework',
     'api',
-    'orders',
     'artist',
     'chatbot',
+    'notifications',
+    'orders',
+    'products',
+    'scrap',
 
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
